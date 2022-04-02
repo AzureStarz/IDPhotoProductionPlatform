@@ -1,14 +1,12 @@
 <template>
   <div class="row justify-content-center">
-    <div class="col-sm-3 col-6">
+    <div>
       <img
-        v-lazy="'https://img.zcool.cn/community/0128d059d88392a801204463c614e9.jpg@1280w_1l_2o_100sh.jpg'"
-        alt="Rounded image"
-        class="img-fluid rounded shadow"
-        style="width: 275px;"
+        v-lazy="imgUrl"
+        alt="证件照Sample"
       >
     </div>
-    <div class="col-sm-3 col-6">
+    <!-- <div class="col-sm-3 col-6">
       <img
         v-lazy="'https://img.zcool.cn/community/01da2b5c2eee60a8012029ac0d77a8.jpg@1280w_1l_2o_100sh.jpg'"
         alt="Rounded image"
@@ -31,7 +29,7 @@
         class="img-fluid rounded shadow"
         style="width: 275px;"
       >
-    </div>
+    </div> -->
     <!--         <div class="col-sm-3 col-6">
             <small class="d-block text-uppercase font-weight-bold mb-4">Circle Image</small>
             <img v-lazy="'img/theme/team-2-800x800.jpg'" alt="Circle image"
@@ -50,7 +48,9 @@
   </div>
 </template>
 <script>
-export default {};
+export default {
+  props: ['imgUrl']
+};
 </script>
 <style>
 </style>

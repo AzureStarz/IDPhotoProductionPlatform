@@ -124,14 +124,27 @@
                   <template slot="footer">
                     <!-- <base-button type="white">Ok, Got it</base-button> -->
                     <div class="btn-wrapper">
-                      <base-button
-                        tag="a"
-                        href="https://demos.creative-tim.com/argon-design-system/docs/components/alerts.html"
+                      <!-- <base-button
+                        @click="uploadFile()"
                         class="mb-3 mb-sm-0"
                         type="info"
                         icon="fa fa-code"
                       >
                         上传
+                      </base-button> -->
+                      <base-button
+                        type="info"
+                        @click="uploadPhoto"
+                        icon="fa fa-code"
+                      >
+                        <input
+                          type="file"
+                          accept="image/*"
+                          style="display:none"
+                          id="uploadfile"
+                          @change="uploadFile"
+                        />
+                        上传图片
                       </base-button>
                       <base-button
                         @click="toCameraPage()"
@@ -225,13 +238,18 @@
                     <!-- <base-button type="white">Ok, Got it</base-button> -->
                     <div class="btn-wrapper">
                       <base-button
-                        tag="a"
-                        href="https://demos.creative-tim.com/argon-design-system/docs/components/alerts.html"
-                        class="mb-3 mb-sm-0"
                         type="info"
+                        @click="uploadPhoto"
                         icon="fa fa-code"
                       >
-                        上传
+                        <input
+                          type="file"
+                          accept="image/*"
+                          style="display:none"
+                          id="uploadfile"
+                          @change="uploadFile"
+                        />
+                        上传图片
                       </base-button>
                       <base-button
                         tag="a"
@@ -326,13 +344,18 @@
                     <!-- <base-button type="white">Ok, Got it</base-button> -->
                     <div class="btn-wrapper">
                       <base-button
-                        tag="a"
-                        href="https://demos.creative-tim.com/argon-design-system/docs/components/alerts.html"
-                        class="mb-3 mb-sm-0"
                         type="info"
+                        @click="uploadPhoto"
                         icon="fa fa-code"
                       >
-                        上传
+                        <input
+                          type="file"
+                          accept="image/*"
+                          style="display:none"
+                          id="uploadfile"
+                          @change="uploadFile"
+                        />
+                        上传图片
                       </base-button>
                       <base-button
                         tag="a"
@@ -365,6 +388,7 @@
 
 <script>
 import Modal from "@/components/Modal.vue"
+import { fabric } from "fabric";
 export default {
   name: "home",
   components: {
@@ -382,6 +406,31 @@ export default {
   methods: {
     toCameraPage () {
       this.$router.push('/camera');
+    },
+    // 载入图片
+    uploadPhoto () {
+      document.getElementById("uploadfile").click();
+    },
+    uploadFile (e) {
+      let file = e.target.files[0];
+      let reader = new FileReader();
+      reader.onload = (e) => {
+        let data = e.target.result;
+        fabric.Image.fromURL(data, (img) => {
+          console.log(img)
+          this.toCraftPage(img)
+        });
+      };
+      reader.readAsDataURL(file);
+      e.target.value = "";
+    },
+    toCraftPage (img) {
+      this.$router.push({
+        name: "craft",
+        params: {
+          img: img
+        }
+      })
     }
   }
 };

@@ -32,49 +32,52 @@
             title="证件类型"
             name="1"
           >
-            <el-row>
-              <el-radio
-                v-model="radio"
-                label="1"
-                border
-              >原尺寸</el-radio>
-              <el-radio
-                v-model="radio"
-                label="2"
-                border
-              >小一寸</el-radio>
-            </el-row>
-            <el-row class="mt-2">
-              <el-radio
-                v-model="radio"
-                label="3"
-                border
-              >一寸</el-radio>
-              <el-radio
-                v-model="radio"
-                label="4"
-                border
-              >大一寸</el-radio>
-            </el-row>
-            <el-row class="mt-2">
-              <el-radio
-                v-model="radio"
-                label="5"
-                border
-              >小二寸</el-radio>
-              <el-radio
-                v-model="radio"
-                label="6"
-                border
-              >二寸</el-radio>
-            </el-row>
-            <el-row class="mt-2">
-              <el-radio
-                v-model="radio"
-                label="7"
-                border
-              >大二寸</el-radio>
-            </el-row>
+            <el-radio-group v-model="radio">
+              <el-row>
+                <el-radio
+                  :label="1"
+                  border
+                >原尺寸</el-radio>
+                <el-radio
+                  :label="2"
+                  border
+                >小一寸</el-radio>
+              </el-row>
+              <el-row class="mt-2">
+                <el-radio
+                  :label="3"
+                  border
+                >一寸</el-radio>
+                <el-radio
+                  :label="4"
+                  border
+                >大一寸</el-radio>
+              </el-row>
+              <el-row class="mt-2">
+                <el-radio
+                  :label="5"
+                  border
+                >小二寸</el-radio>
+                <el-radio
+                  :label="6"
+                  border
+                >二寸</el-radio>
+              </el-row>
+              <el-row class="mt-2">
+                <el-radio
+                  :label="7"
+                  border
+                >大二寸</el-radio>
+              </el-row>
+            </el-radio-group>
+
+            <base-button
+              type="info"
+              icon="fa fa-plus-square-o"
+              @click="handleSizeSelection()"
+            >
+              确认选择
+            </base-button>
           </el-collapse-item>
           <el-collapse-item
             class="ml-2"
@@ -144,8 +147,11 @@
 
 <script>
 import { fabric } from "fabric";
+import BaseButton from '../../components/BaseButton.vue';
 let editorCanvas = "";
-
+let rect = null;
+let size = null;
+let originalSize = null;
 fabric.Object.prototype.set({
   cornerStrokeColor: "#66b0ef",
   cornerColor: "#60abec",
@@ -157,9 +163,10 @@ fabric.Object.prototype.set({
 });
 
 export default {
+  components: { BaseButton },
   data () {
     return {
-      radio: '1',
+      radio: '2',
       activeNames: ['2'],
       isHide: true,
       checkAll: false,
@@ -194,6 +201,34 @@ export default {
     this.initeditorCanvas();
   },
   methods: {
+    handleSizeSelection () {
+      let str = "一寸"
+      if (this.radio == 1) {
+        str = "原尺寸"
+      }
+      if (this.radio == 2) {
+        str = "小一寸"
+      }
+      if (this.radio == 3) {
+        str = "一寸"
+      }
+      if (this.radio == 4) {
+        str = "大一寸"
+      }
+      if (this.radio == 5) {
+        str = "小二寸"
+      }
+      if (this.radio == 6) {
+        str = "二寸"
+      }
+      if (this.radio == 7) {
+        str = "大二寸"
+      }
+      editorCanvas.remove(rect);
+      size = this.acquireSize(str);
+      rect = this.drawRect(size);
+      editorCanvas.add(rect);
+    },
     handleChange (val) {
       console.log(val);
     },
@@ -206,7 +241,6 @@ export default {
       this.imageBase64 = base64URl
       this.done = false
     },
-
     saveTemplates () {
       console.log("你点击了模板保存");
       let base64URl = editorCanvas.toDataURL({
@@ -218,7 +252,6 @@ export default {
     addTemplates () {
       console.log("添加模板");
     },
-
     initD () {
       // 监听鼠标按下
       const obj = editorCanvas.getActiveObject();
@@ -262,19 +295,8 @@ export default {
       let zoom = Number(editorCanvas.getZoom())
       return (y - editorCanvas.viewportTransform[5]) / zoom;
     },
-
     // 初始化模板编辑画布
     initeditorCanvas () {
-      // 根据不同证件照要求创建框框
-      // 创建一个矩形对象
-      // TODO 后面改成虚线框出来这样效果肯定更好 再根据选择的类型选择颜色以及方框大小
-      let rect = new fabric.Rect({
-        left: 450, //距离左边的距离
-        top: 100, //距离上边的距离
-        fill: "skyblue", //填充的颜色
-        width: 358, //矩形宽度
-        height: 441, //矩形高度
-      });
 
       editorCanvas = new fabric.Canvas("editorCanvas", {
         devicePixelRatio: true,
@@ -285,15 +307,22 @@ export default {
         backgroundColor: "#ffffff",
         transparentCorners: false,
       });
-      editorCanvas.preserveObjectStacking = true;
+      if (this.$route.params.img != undefined) {
+        editorCanvas.add(this.$route.params.img);
+      }
+      // TODO: 这里利用传进来的参数替换“一寸”
+      // 根据不同证件照要求创建框框
+      // 创建一个矩形对象
+      size = this.acquireSize("一寸")
+      rect = this.drawRect(size)
       editorCanvas.add(rect);
+      // editorCanvas.remove(rect);
+      editorCanvas.preserveObjectStacking = true;
     },
-
     // 载入图片
     imgDraw () {
       document.getElementById("uploadfile").click();
     },
-
     uploadFile (e) {
       editorCanvas.isDrawingMode = false;
       let file = e.target.files[0];
@@ -301,7 +330,10 @@ export default {
       reader.onload = (e) => {
         let data = e.target.result;
         fabric.Image.fromURL(data, (img) => {
+          console.log(img);
+          originalSize = { height: img.height, width: img.width };
           editorCanvas.add(img).renderAll();
+          this.handleSizeSelection()
         });
       };
       reader.readAsDataURL(file);
@@ -312,10 +344,10 @@ export default {
     downLoad () {
       this.done = true;
       const dataURL = editorCanvas.toDataURL({
-        width: 358,
-        height: 441,
-        left: 450,
-        top: 100,
+        width: size.width,
+        height: size.height,
+        left: editorCanvas.getCenter().left - size.width / 2,
+        top: editorCanvas.getCenter().top - size.height / 2,
         format: "png",
       });
       const link = document.createElement("a");
@@ -324,6 +356,54 @@ export default {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+    },
+
+    // 画定位框 虚线
+    drawRect (size) {
+      let rect = new fabric.Rect({
+        stroke: "red",
+        strokeDashArray: [3, 1],
+        strokeWidth: 2,
+        left: editorCanvas.getCenter().left - 2 - size.width / 2, //距离左边的距离
+        top: editorCanvas.getCenter().top - 2 - size.height / 2, //距离上边的距离
+        fill: "transparent", //填充的颜色
+        width: size.width + 2, //矩形宽度
+        height: size.height + 2, //矩形高度
+        selectable: false, // 定位框不能移动
+      });
+      return rect;
+    },
+
+    // 获得尺寸大小
+    acquireSize (sizeName) {
+      if (sizeName == "小一寸") {
+        this.radio = 2;
+        return { height: 390, width: 260 };
+      }
+      if (sizeName == "一寸") {
+        this.radio = 3;
+        return { height: 413, width: 295 };
+      }
+      if (sizeName == "大一寸") {
+        this.radio = 4;
+        return { height: 567, width: 413 };
+      }
+      if (sizeName == "小二寸") {
+        this.radio = 5;
+        return { height: 567, width: 390 };
+      }
+      if (sizeName == "二寸") {
+        this.radio = 6;
+        return { height: 579, width: 413 };
+      }
+      if (sizeName == "大二寸") {
+        this.radio = 7;
+        return { height: 626, width: 413 };
+      }
+      if (sizeName == "原尺寸") {
+        this.radio = 1;
+        return originalSize;
+      }
     },
 
     // 清空画布

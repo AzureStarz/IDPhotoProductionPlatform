@@ -91,6 +91,7 @@ export default {
     },
     // 第三步、拍照图转换file格式上传，
     // 第四步、获取图片url链接
+    // TODO: 将拍摄图片传到后台 进行人像切割
     postImg () {
       /* let formData = new FormData()
       formData.append('file', this.base64ToFile(this.imgSrc, 'png'))
@@ -101,6 +102,7 @@ export default {
         // console.log(res);
         if (res.data.code == '00') {
           // 图片文件传至后台 == 获取到该图片的url路径
+          // TODO: 这里再将切好的图片封装成fabric对象 然后再传到Canvas里去
           this.postVideoImg = res.data.FilePath
           //获得图片的url后，需要做什么
           //做的事情......
@@ -109,7 +111,6 @@ export default {
       }).catch(error => {
         console.log(error);
       }) */
-
     },
 
     // 调用权限（打开摄像头功能）
