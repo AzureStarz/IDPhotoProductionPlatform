@@ -347,6 +347,7 @@
                         type="info"
                         @click="uploadPhoto"
                         icon="fa fa-code"
+                        v-loading.fullscreen.lock="fullscreenLoading"
                       >
                         <input
                           type="file"
@@ -400,7 +401,8 @@ export default {
         modal1: false,
         modal2: false,
         modal3: false
-      }
+      },
+      fullscreenLoading: false
     };
   },
   methods: {
@@ -411,15 +413,35 @@ export default {
     uploadPhoto () {
       document.getElementById("uploadfile").click();
     },
+    sleep (time) {
+      return new Promise((resolve) => setTimeout(resolve, time));
+    },
     uploadFile (e) {
       let file = e.target.files[0];
+      console.log(file);
       let reader = new FileReader();
       reader.onload = (e) => {
+        this.fullscreenLoading = true;
+        // TODO: 这个地方读取到的也是BASE64图片 需要传到后端 然后后端返回一个url地址
         let data = e.target.result;
-        fabric.Image.fromURL(data, (img) => {
-          console.log(img)
-          this.toCraftPage(img)
-        });
+        // TODO: 这里等后端传回来url直接放到函数里面就行  可以是网络url
+        this.sleep(2000).then(() => {
+          let imgUrl = '/img/brand/blue.png';
+          fabric.Image.fromURL(imgUrl, (img) => {
+            // 封装成了fabric格式的图片
+            console.log(img)
+            this.toCraftPage(img)
+          });
+        })
+        /* this.sleep(2000).then(() => {
+          let data = e.target.result;
+          console.log(data);
+          fabric.Image.fromURL(data, (img) => {
+            // 封装成了fabric格式的图片
+            console.log(img)
+            this.toCraftPage(img)
+          });
+        }) */
       };
       reader.readAsDataURL(file);
       e.target.value = "";

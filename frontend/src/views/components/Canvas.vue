@@ -226,7 +226,9 @@ export default {
       }
       editorCanvas.remove(rect);
       size = this.acquireSize(str);
+      console.log(size)
       rect = this.drawRect(size);
+      console.log(rect);
       editorCanvas.add(rect);
     },
     handleChange (val) {
@@ -308,7 +310,9 @@ export default {
         transparentCorners: false,
       });
       if (this.$route.params.img != undefined) {
-        editorCanvas.add(this.$route.params.img);
+        let uploadImage = this.$route.params.img;
+        originalSize = { height: uploadImage.height, width: uploadImage.width };
+        editorCanvas.add(uploadImage);
       }
       // TODO: 这里利用传进来的参数替换“一寸”
       // 根据不同证件照要求创建框框
@@ -412,6 +416,9 @@ export default {
       if (children.length > 0) {
         editorCanvas.remove(...children);
       }
+      rect = null;
+      size = null;
+      originalSize = null;
       editorCanvas.setBackgroundColor("#fff");
     },
 

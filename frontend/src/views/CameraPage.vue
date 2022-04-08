@@ -96,9 +96,9 @@ export default {
       /* let formData = new FormData()
       formData.append('file', this.base64ToFile(this.imgSrc, 'png'))
       formData.append("flag", "videoImg")// 额外参数
-
+      console.log(this.imgSrc) */
       // 对应的后台上传图片接口 === app/StudentVideoController/uploadFile
-      this.$axios.post('app/StudentVideoController/uploadFile', formData).then(res => {
+      /* this.$axios.post('app/StudentVideoController/uploadFile', formData).then(res => {
         // console.log(res);
         if (res.data.code == '00') {
           // 图片文件传至后台 == 获取到该图片的url路径
@@ -199,7 +199,7 @@ export default {
       this.thisVideo.srcObject.getTracks()[0].stop();
     },
 
-    // base64 转为 file 
+    // base64 转为 file
     base64ToFile (urlData, fileName) {
       let arr = urlData.split(',');
       let mime = arr[0].match(/:(.*?);/)[1];
