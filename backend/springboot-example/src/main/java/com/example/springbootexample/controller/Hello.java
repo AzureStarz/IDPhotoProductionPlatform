@@ -3,24 +3,26 @@ package com.example.springbootexample.controller;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.springframework.util.ClassUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.example.springbootexample.Utils.*;
 import java.io.File;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
+import java.util.Map;
 
 @RestController
 public class Hello {
-    @GetMapping("/hello")
-    public String Hello(String imgStr, String fileName){
-
+    @PostMapping("/api/seg")
+    public String segment(@RequestBody Map<String, String> params){
+        String imgStr = params.get("imgStr");
+        String fileName = params.get("fileName");
         String url = "https://aip.baidubce.com/rest/2.0/image-classify/v1/body_seg";
         try {
             // 本地文件路径
             //String filePath = "D:\\test\\2.jpg";
             //获取项目classes/static的地址
+            System.out.println(imgStr+ fileName);
             String staticPath = ClassUtils.getDefaultClassLoader().getResource("static").getPath();
             // String fileName = file.getOriginalFilename();  //获取文件名
 
@@ -48,7 +50,7 @@ public class Hello {
             JsonElement foreground = obj.get("foreground");
             Renew.GenerateImage(imgStr,savePath);
             Renew.GenerateImage(GsonUtils.toJson(foreground),savePathNew);
-            return visitPath;
+            return "modify-" + fileName;
         } catch (Exception e) {
             e.printStackTrace();
         }
