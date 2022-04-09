@@ -26,6 +26,7 @@ public class Hello {
             String staticPath = ClassUtils.getDefaultClassLoader().getResource("static").getPath();
             // String fileName = file.getOriginalFilename();  //获取文件名
             imgStr = imgStr.replace("^data:image/w+;base64,", "");
+            /*
             // 图片存储目录及图片名称
             String url_path = "images" + File.separator + fileName;
             String url_path_new_photo = "images" + File.separator+ "modify-" + fileName;
@@ -34,7 +35,7 @@ public class Hello {
             String savePathNew = staticPath + File.separator + url_path_new_photo;
             // 访问路径=静态资源路径+文件目录路径
             // String visitPath ="static/" + url_path_new_photo;
-
+            */
             //byte[] imgData = FileUtil.readFileByBytes(filePath);
             //String imgStr = Base64Util.encode(imgData);
             String imgParam = URLEncoder.encode(imgStr, "UTF-8");
@@ -48,9 +49,10 @@ public class Hello {
             JsonObject obj = GsonUtils.fromJson(result, JsonObject.class);
             //System.out.println(result);
             JsonElement foreground = obj.get("foreground");
-            Renew.GenerateImage(imgStr,savePath);
+
+            Renew.GenerateImage(imgStr,FileUtil.GetFrontEndPath(fileName));
             String base64NewImg = GsonUtils.toJson(foreground);
-            Renew.GenerateImage(ImageResizer.compressImage(base64NewImg.getBytes(),0.5).toString(),savePathNew);
+            Renew.GenerateImage(ImageResizer.compressImage(base64NewImg.getBytes(),0.5).toString(),FileUtil.GetFrontEndPath("modify-"+ fileName));
             return "modify-" + fileName;
         } catch (Exception e) {
             e.printStackTrace();

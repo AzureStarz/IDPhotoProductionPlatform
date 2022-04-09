@@ -6,6 +6,14 @@ import java.io.*;
  * 文件读取工具类
  */
 public class FileUtil {
+    public static String GetFrontEndPath(String fileName){
+        String proj_path = System.getProperty("user.dir");
+        int index = proj_path.indexOf("backend");
+        proj_path = proj_path.substring(0,index);
+        String new_file_path = proj_path + "frontend\\public\\img\\photos" + fileName;
+        return new_file_path;
+        //return "fake";
+    }
 
     /**
      * 读取文件内容，作为字符串返回
