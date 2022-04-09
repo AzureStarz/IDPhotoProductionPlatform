@@ -49,7 +49,8 @@ public class Hello {
             //System.out.println(result);
             JsonElement foreground = obj.get("foreground");
             Renew.GenerateImage(imgStr,savePath);
-            Renew.GenerateImage(GsonUtils.toJson(foreground),savePathNew);
+            String base64NewImg = GsonUtils.toJson(foreground);
+            Renew.GenerateImage(ImageResizer.compressImage(base64NewImg.getBytes(),0.5).toString(),savePathNew);
             return "modify-" + fileName;
         } catch (Exception e) {
             e.printStackTrace();
