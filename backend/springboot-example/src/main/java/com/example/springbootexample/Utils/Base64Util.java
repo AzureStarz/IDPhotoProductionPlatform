@@ -1,4 +1,4 @@
-package com.example.springbootexample.controller;
+package com.example.springbootexample.Utils;
 
 /**
  * Base64 工具类

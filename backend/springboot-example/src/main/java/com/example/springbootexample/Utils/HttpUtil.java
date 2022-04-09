@@ -1,4 +1,4 @@
-package com.example.springbootexample.controller;
+package com.example.springbootexample.Utils;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
