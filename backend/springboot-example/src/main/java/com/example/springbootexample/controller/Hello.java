@@ -2,9 +2,11 @@ package com.example.springbootexample.controller;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+// import com.example.springbootexample.Utils.*;
+import java.io.File;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -12,14 +14,27 @@ import java.net.http.HttpClient;
 @RestController
 public class Hello {
     @GetMapping("/hello")
-    public String Hello(){
+    public String Hello(String imgStr, String fileName){
 
         String url = "https://aip.baidubce.com/rest/2.0/image-classify/v1/body_seg";
         try {
             // 本地文件路径
-            String filePath = "D:\\test\\2.jpg";
-            byte[] imgData = FileUtil.readFileByBytes(filePath);
-            String imgStr = Base64Util.encode(imgData);
+            //String filePath = "D:\\test\\2.jpg";
+            //获取项目classes/static的地址
+            String staticPath = ClassUtils.getDefaultClassLoader().getResource("static").getPath();
+            // String fileName = file.getOriginalFilename();  //获取文件名
+
+            // 图片存储目录及图片名称
+            String url_path = "images" + File.separator + fileName;
+            String url_path_new_photo = "images" + File.separator+ "modify-" + fileName;
+            //图片保存路径
+            String savePath = staticPath + File.separator + url_path;
+            String savePathNew = staticPath + File.separator + url_path_new_photo;
+            // 访问路径=静态资源路径+文件目录路径
+            String visitPath ="static/" + url_path_new_photo;
+
+            //byte[] imgData = FileUtil.readFileByBytes(filePath);
+            //String imgStr = Base64Util.encode(imgData);
             String imgParam = URLEncoder.encode(imgStr, "UTF-8");
 
             String param = "image=" + imgParam;
@@ -31,13 +46,14 @@ public class Hello {
             JsonObject obj = GsonUtils.fromJson(result, JsonObject.class);
             //System.out.println(result);
             JsonElement foreground = obj.get("foreground");
-            Renew.GenerateImage(GsonUtils.toJson(foreground),"D:\\test\\3.jpg");
-            return result;
+            Renew.GenerateImage(imgStr,savePath);
+            Renew.GenerateImage(GsonUtils.toJson(foreground),savePathNew);
+            return visitPath;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
-
+        // test : return imgStr + fileName;
         //return "hello world <img src=\"images/test.jpg\">";
     }
 
