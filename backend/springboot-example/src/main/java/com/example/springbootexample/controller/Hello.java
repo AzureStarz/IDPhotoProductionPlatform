@@ -22,10 +22,10 @@ public class Hello {
             // 本地文件路径
             //String filePath = "D:\\test\\2.jpg";
             //获取项目classes/static的地址
-            System.out.println(imgStr+ fileName);
-            String staticPath = ClassUtils.getDefaultClassLoader().getResource("static").getPath();
+            // System.out.println(imgStr+ fileName);
+            // String staticPath = ClassUtils.getDefaultClassLoader().getResource("static").getPath();
             // String fileName = file.getOriginalFilename();  //获取文件名
-            imgStr = imgStr.replace("^data:image/w+;base64,", "");
+            // imgStr = imgStr.replace("^data:image/w+;base64,", "");
             /*
             // 图片存储目录及图片名称
             String url_path = "images" + File.separator + fileName;
@@ -52,7 +52,7 @@ public class Hello {
 
             Renew.GenerateImage(imgStr,FileUtil.GetFrontEndPath(fileName));
             String base64NewImg = GsonUtils.toJson(foreground);
-            Renew.GenerateImage(ImageResizer.compressImage(base64NewImg.getBytes(),0.5).toString(),FileUtil.GetFrontEndPath("modify-"+ fileName));
+            Renew.GenerateImage(base64NewImg, FileUtil.GetFrontEndPath("modify-"+ fileName));
             return "modify-" + fileName;
         } catch (Exception e) {
             e.printStackTrace();

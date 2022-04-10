@@ -1,13 +1,19 @@
 const webpack = require('webpack');
 
 module.exports = {
-  configureWebpack: {
-    // Set up all the aliases we use in our app.
-    plugins: [
-      new webpack.optimize.LimitChunkCountPlugin({
-        maxChunks: 6
-      })
-    ]
+  devServer: {
+    port: 3000,
+    open: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080/api', //接口域名
+        changeOrigin: true,       //是否跨域
+        pathRewrite: {
+          '^/api': ''
+        }
+      }
+    },
+    liveReload: false
   },
   pwa: {
     name: 'Vue Argon Design',

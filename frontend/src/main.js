@@ -23,8 +23,9 @@ import './registerServiceWorker'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import fabric from 'fabric'
-
+import axios from 'axios'
 Vue.config.productionTip = false;
+Vue.prototype.$axios = axios;
 Vue.use(Argon);
 Vue.use(ElementUI);
 Vue.use(fabric);

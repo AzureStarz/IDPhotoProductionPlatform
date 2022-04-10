@@ -9,6 +9,7 @@ import Register from "./views/Register.vue";
 import Profile from "./views/Profile.vue";
 import CameraPage from "./views/CameraPage.vue";
 import Craft from "./views/Craft.vue";
+import DIYCraft from "./views/DIYCraft.vue";
 
 Vue.use(Router);
 
@@ -30,6 +31,15 @@ export default new Router({
       components: {
         header: AppHeader,
         default: Craft,
+        footer: AppFooter
+      }
+    },
+    {
+      path: "/diycraft",
+      name: "diycraft",
+      components: {
+        header: AppHeader,
+        default: DIYCraft,
         footer: AppFooter
       }
     },

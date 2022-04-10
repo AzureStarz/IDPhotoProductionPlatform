@@ -3,16 +3,16 @@
     <div class="shape shape-style-1 shape-primary">
     </div>
     <div class="myContainer">
-      <Canvas />
+      <DIYCanvas />
     </div>
   </section>
 </template>
 <script>
-import Canvas from "./components/Canvas.vue"
+import DIYCanvas from "./components/DIYCanvas.vue"
 export default {
-  name: "craft",
+  name: "diycraft",
   components: {
-    Canvas
+    DIYCanvas
   },
   methods: {
     handleOpen (key, keyPath) {

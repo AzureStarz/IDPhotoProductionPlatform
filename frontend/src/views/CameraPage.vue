@@ -53,10 +53,11 @@
           </el-popconfirm>
         </el-row>
         <el-row class="mt-3 row justify-content-center">
-          <base-button
-            @click="toCanvas()"
+          <el-button
+            @click="postImg()"
             type="info"
-          >确认上传</base-button>
+            v-loading.fullscreen.lock="fullscreenLoading"
+          >确认上传</el-button>
         </el-row>
       </div>
     </div>
@@ -66,6 +67,7 @@
 export default {
   data () {
     return {
+      fullscreenLoading: false,
       // 视频调用相关数据开始
       videoWidth: 358 * 1.25,
       videoHeight: 441 * 1.25,
@@ -85,32 +87,37 @@ export default {
 
   },
   methods: {
-    // 点击确认按钮 跳转到制作证件照页面
-    toCanvas () {
-      this.$router.push('/craft');
-    },
     // 第三步、拍照图转换file格式上传，
     // 第四步、获取图片url链接
     // TODO: 将拍摄图片传到后台 进行人像切割
     postImg () {
       /* let formData = new FormData()
       formData.append('file', this.base64ToFile(this.imgSrc, 'png'))
-      formData.append("flag", "videoImg")// 额外参数
-      console.log(this.imgSrc) */
-      // 对应的后台上传图片接口 === app/StudentVideoController/uploadFile
-      /* this.$axios.post('app/StudentVideoController/uploadFile', formData).then(res => {
-        // console.log(res);
-        if (res.data.code == '00') {
-          // 图片文件传至后台 == 获取到该图片的url路径
-          // TODO: 这里再将切好的图片封装成fabric对象 然后再传到Canvas里去
-          this.postVideoImg = res.data.FilePath
-          //获得图片的url后，需要做什么
-          //做的事情......
-        }
-
+      formData.append("flag", "videoImg")// 额外参数 */
+      // console.log(this.imgSrc)
+      this.fullscreenLoading = true;
+      // TODO: 这个地方读取到的也是BASE64图片 需要传到后端 然后后端返回一个url地址
+      let data = this.imgSrc;
+      // 保证原图片能够正常存储下来
+      var imgs = data.replace(/^data:image\/\w+;base64,/, "");
+      let fileName = new Date().valueOf() + '.png';
+      let segURL = '/api/seg';
+      let params = {
+        imgStr: imgs,
+        fileName: fileName
+      }
+      this.$axios.post(segURL, params).then(res => {
+        let imgUrl = 'img\\photos\\';
+        imgUrl += res.data;
+        console.log(imgUrl)
+        fabric.Image.fromURL(imgUrl, (img) => {
+          // 封装成了fabric格式的图片
+          console.log(img)
+          this.toCraftPage(img)
+        });
       }).catch(error => {
-        console.log(error);
-      }) */
+        console.log(error.message);
+      })
     },
 
     // 调用权限（打开摄像头功能）
@@ -188,8 +195,7 @@ export default {
       _this.imgSrc = image;//赋值并预览图片
 
       //这里是调用上传图片接口===== 
-      this.postImg() // 绘制完图片调用图片上传接口
-
+      // this.postImg() // 绘制完图片调用图片上传接口
     },
     resetCamera () {
       this.shot = true;
@@ -211,10 +217,20 @@ export default {
       }
       return new File([ia], fileName, { type: mime });
     },
+    // 路由跳转到制作界面
+    toCraftPage (img) {
+      this.stopNavigator();
+      this.$router.push({
+        name: "craft",
+        params: {
+          img: img
+        }
+      })
+    }
   },
   destroyed: function () { // 离开当前页面
     this.stopNavigator() // 关闭摄像头
-  },
+  }
 }
 </script>
 <style>

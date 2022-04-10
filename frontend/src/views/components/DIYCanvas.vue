@@ -5,7 +5,7 @@
         <el-row>
           <base-button
             type="info"
-            @click="imgDraw"
+            @click="uploadButton1"
             icon="fa fa-plus-square-o"
             v-loading.fullscreen.lock="fullscreenLoading"
           >
@@ -30,63 +30,26 @@
         >
           <el-collapse-item
             class="ml-2"
-            title="证件类型"
-            name="1"
-          >
-            <el-radio-group v-model="radio">
-              <el-row>
-                <el-radio
-                  :label="1"
-                  border
-                >原尺寸</el-radio>
-                <el-radio
-                  :label="2"
-                  border
-                >小一寸</el-radio>
-              </el-row>
-              <el-row class="mt-2">
-                <el-radio
-                  :label="3"
-                  border
-                >一寸</el-radio>
-                <el-radio
-                  :label="4"
-                  border
-                >大一寸</el-radio>
-              </el-row>
-              <el-row class="mt-2">
-                <el-radio
-                  :label="5"
-                  border
-                >小二寸</el-radio>
-                <el-radio
-                  :label="6"
-                  border
-                >二寸</el-radio>
-              </el-row>
-              <el-row class="mt-2">
-                <el-radio
-                  :label="7"
-                  border
-                >大二寸</el-radio>
-              </el-row>
-            </el-radio-group>
-
-            <base-button
-              type="info"
-              icon="fa fa-plus-square-o"
-              @click="handleSizeSelection()"
-            >
-              确认选择
-            </base-button>
-          </el-collapse-item>
-          <el-collapse-item
-            class="ml-2"
             title="换背景"
             name="2"
           >
             <el-row>
-              <p style="margin-top:20px; margin-bottom:5px; font-weight: bold">选择背景颜色</p>
+              <p style="font-weight: bold">请上传所需要的背景图片</p>
+              <base-button
+                type="success"
+                @click="uploadButton2"
+                icon="fa fa-plus-square-o"
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  style="display:none"
+                  id="uploadbackground"
+                  @change="uploadBackground"
+                />
+                上传背景
+              </base-button>
+              <p style="font-weight: bold">选择背景颜色</p>
               <el-color-picker
                 class="color-picker"
                 v-model="bgcolor"
@@ -104,7 +67,7 @@
             title="智能调色美颜"
             name="3"
           >
-            <el-popconfirm title="您确定要美颜吗?有些证件照是不允许美颜的喔~">
+            <el-popconfirm>
               <el-button slot="reference">人像美颜</el-button>
             </el-popconfirm>
           </el-collapse-item>
@@ -150,9 +113,8 @@
 import { fabric } from "fabric";
 import BaseButton from '../../components/BaseButton.vue';
 let editorCanvas = "";
-let rect = null;
-let size = null;
-let originalSize = null;
+let diyImg = null;
+let diyBackground = null;
 fabric.Object.prototype.set({
   cornerStrokeColor: "#66b0ef",
   cornerColor: "#60abec",
@@ -168,7 +130,6 @@ export default {
   data () {
     return {
       fullscreenLoading: false,
-      radio: '2',
       activeNames: ['2'],
       isHide: true,
       checkAll: false,
@@ -203,36 +164,6 @@ export default {
     this.initeditorCanvas();
   },
   methods: {
-    handleSizeSelection () {
-      let str = "一寸"
-      if (this.radio == 1) {
-        str = "原尺寸"
-      }
-      if (this.radio == 2) {
-        str = "小一寸"
-      }
-      if (this.radio == 3) {
-        str = "一寸"
-      }
-      if (this.radio == 4) {
-        str = "大一寸"
-      }
-      if (this.radio == 5) {
-        str = "小二寸"
-      }
-      if (this.radio == 6) {
-        str = "二寸"
-      }
-      if (this.radio == 7) {
-        str = "大二寸"
-      }
-      editorCanvas.remove(rect);
-      size = this.acquireSize(str);
-      console.log(size)
-      rect = this.drawRect(size);
-      console.log(rect);
-      editorCanvas.add(rect);
-    },
     handleChange (val) {
       console.log(val);
     },
@@ -313,21 +244,21 @@ export default {
       });
       if (this.$route.params.img != undefined) {
         let uploadImage = this.$route.params.img;
-        originalSize = { height: uploadImage.height, width: uploadImage.width };
         editorCanvas.add(uploadImage);
       }
       // TODO: 这里利用传进来的参数替换“一寸”
       // 根据不同证件照要求创建框框
       // 创建一个矩形对象
-      size = this.acquireSize("一寸")
-      rect = this.drawRect(size)
-      editorCanvas.add(rect);
       // editorCanvas.remove(rect);
       editorCanvas.preserveObjectStacking = true;
     },
     // 载入图片
-    imgDraw () {
+    uploadButton1 () {
       document.getElementById("uploadfile").click();
+    },
+    // 载入图片
+    uploadButton2 () {
+      document.getElementById("uploadbackground").click();
     },
     uploadFile (e) {
       editorCanvas.isDrawingMode = false;
@@ -353,13 +284,8 @@ export default {
           fabric.Image.fromURL(imgUrl, (img) => {
             // 封装成了fabric格式的图片
             console.log(img);
-            originalSize = { height: img.height, width: img.width };
-            img.top = 0;
-            img.left = 0;
-            img.scaleX = 0.3;
-            img.scaleY = 0.3;
-            editorCanvas.add(img).renderAll();
-            this.handleSizeSelection();
+            diyImg = img;
+            editorCanvas.add(diyImg).renderAll();
             this.fullscreenLoading = false;
           });
         }).catch(error => {
@@ -371,15 +297,35 @@ export default {
 
 
     },
+    uploadBackground (e) {
+      editorCanvas.isDrawingMode = false;
+      let file = e.target.files[0];
+      console.log(file);
+      let reader = new FileReader();
+      reader.onload = (e) => {
+        this.fullscreenLoading = true;
+        // TODO: 这个地方读取到的也是BASE64图片 需要传到后端 然后后端返回一个url地址
+        let data = e.target.result;
+        fabric.Image.fromURL(data, (img) => {
+          // 封装成了fabric格式的图片
+          console.log(img);
+          diyBackground = img;
+          editorCanvas.add(diyBackground).renderAll();
+          editorCanvas.bringToFront(diyImg);
+          this.fullscreenLoading = false;
+        });
+      };
+      reader.readAsDataURL(file);
+      e.target.value = "";
 
+
+    },
     // 下载图片
     downLoad () {
       this.done = true;
       const dataURL = editorCanvas.toDataURL({
-        width: size.width,
-        height: size.height,
-        left: editorCanvas.getCenter().left - size.width / 2,
-        top: editorCanvas.getCenter().top - size.height / 2,
+        width: editorCanvas.width,
+        height: editorCanvas.height,
         format: "png",
       });
       const link = document.createElement("a");
@@ -390,135 +336,13 @@ export default {
       document.body.removeChild(link);
     },
 
-    // 画定位框 虚线
-    // TODO: 变成虚线
-    drawRect (size) {
-      let rect = new fabric.Rect({
-        stroke: "black",
-        strokeDashArray: [3, 1],
-        strokeWidth: 2,
-        left: editorCanvas.getCenter().left - 2 - size.width / 2, //距离左边的距离
-        top: editorCanvas.getCenter().top - 2 - size.height / 2, //距离上边的距离
-        fill: "transparent", //填充的颜色
-        width: size.width + 2, //矩形宽度
-        height: size.height + 2, //矩形高度
-        selectable: false, // 定位框不能移动
-      });
-      return rect;
-    },
-
-    // 获得尺寸大小
-    acquireSize (sizeName) {
-      if (sizeName == "小一寸") {
-        this.radio = 2;
-        return { height: 390, width: 260 };
-      }
-      if (sizeName == "一寸") {
-        this.radio = 3;
-        return { height: 413, width: 295 };
-      }
-      if (sizeName == "大一寸") {
-        this.radio = 4;
-        return { height: 567, width: 413 };
-      }
-      if (sizeName == "小二寸") {
-        this.radio = 5;
-        return { height: 567, width: 390 };
-      }
-      if (sizeName == "二寸") {
-        this.radio = 6;
-        return { height: 579, width: 413 };
-      }
-      if (sizeName == "大二寸") {
-        this.radio = 7;
-        return { height: 626, width: 413 };
-      }
-      if (sizeName == "原尺寸") {
-        this.radio = 1;
-        return originalSize;
-      }
-    },
-
     // 清空画布
     resetCanvas () {
       let children = editorCanvas.getObjects();
       if (children.length > 0) {
         editorCanvas.remove(...children);
       }
-      rect = null;
-      size = null;
-      originalSize = null;
       editorCanvas.setBackgroundColor("#fff");
-    },
-
-    // 缩放
-    zoomIt (factor) {
-      let zoomCounter = this.zoomCounter;
-      let cWidth = editorCanvas.width;
-      let cHeight = editorCanvas.height;
-
-      /* 同步缩小 */
-      if (factor < 1 && zoomCounter > 0) {
-        this.zoomCounter -= 20;
-        editorCanvas.setWidth(cWidth * factor);
-        editorCanvas.setHeight(cHeight * factor);
-
-        const objects = editorCanvas.getObjects();
-        for (let i in objects) {
-          let scaleX = objects[i].scaleX;
-          let scaleY = objects[i].scaleY;
-          let left = objects[i].left;
-          let top = objects[i].top;
-          let tempScaleX = scaleX * factor;
-          let tempScaleY = scaleY * factor;
-          let tempLeft = left * factor;
-          let tempTop = top * factor;
-          objects[i].scaleX = tempScaleX;
-          objects[i].scaleY = tempScaleY;
-          objects[i].left = tempLeft;
-          objects[i].top = tempTop;
-          objects[i].setCoords();
-          let zoomPoint = new fabric.Point(
-            editorCanvas.width / 2,
-            editorCanvas.height / 2
-          );
-          editorCanvas.zoomToPoint(zoomPoint, factor);
-          editorCanvas.renderAll();
-          editorCanvas.calcOffset();
-        }
-      }
-
-      /* 同步放大 */
-      if (factor > 1 && zoomCounter < 100) {
-        this.zoomCounter += 20;
-        editorCanvas.setWidth(cWidth * factor);
-        editorCanvas.setHeight(cHeight * factor);
-        const objects = editorCanvas.getObjects();
-        for (let i in objects) {
-          let scaleX = objects[i].scaleX;
-          let scaleY = objects[i].scaleY;
-          let left = objects[i].left;
-          let top = objects[i].top;
-          let tempScaleX = scaleX * factor;
-          let tempScaleY = scaleY * factor;
-          let tempLeft = left * factor;
-          let tempTop = top * factor;
-          objects[i].scaleX = tempScaleX;
-          objects[i].scaleY = tempScaleY;
-          objects[i].left = tempLeft;
-          objects[i].top = tempTop;
-          objects[i].setCoords();
-        }
-        let zoomPoint = new fabric.Point(
-          editorCanvas.width / 2,
-          editorCanvas.height / 2
-        );
-        editorCanvas.zoomToPoint(zoomPoint, factor);
-        editorCanvas.renderAll();
-        editorCanvas.calcOffset();
-      } else {
-        return;
-      }
     },
 
     // 背景颜色

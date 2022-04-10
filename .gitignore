@@ -1,7 +1,7 @@
 .DS_Store
 node_modules
 /dist
-
+frontend/public/img/photos
 # local env files
 .env.local
 .env.*.local

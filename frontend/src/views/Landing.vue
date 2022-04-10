@@ -413,9 +413,6 @@ export default {
     uploadPhoto () {
       document.getElementById("uploadfile").click();
     },
-    sleep (time) {
-      return new Promise((resolve) => setTimeout(resolve, time));
-    },
     uploadFile (e) {
       let file = e.target.files[0];
       console.log(file);
@@ -424,29 +421,32 @@ export default {
         this.fullscreenLoading = true;
         // TODO: 这个地方读取到的也是BASE64图片 需要传到后端 然后后端返回一个url地址
         let data = e.target.result;
-        // TODO: 这里等后端传回来url直接放到函数里面就行  可以是网络url
-        this.sleep(2000).then(() => {
-          let imgUrl = '/img/brand/blue.png';
+        // 保证原图片能够正常存储下来
+        var imgs = data.replace(/^data:image\/\w+;base64,/, "");
+        let fileName = file.name;
+        let segURL = '/api/seg';
+        let params = {
+          imgStr: imgs,
+          fileName: fileName
+        }
+        this.$axios.post(segURL, params).then(res => {
+          let imgUrl = 'img\\photos\\';
+          imgUrl += res.data;
+          console.log(imgUrl)
           fabric.Image.fromURL(imgUrl, (img) => {
             // 封装成了fabric格式的图片
             console.log(img)
             this.toCraftPage(img)
           });
+        }).catch(error => {
+          console.log(error.message);
         })
-        /* this.sleep(2000).then(() => {
-          let data = e.target.result;
-          console.log(data);
-          fabric.Image.fromURL(data, (img) => {
-            // 封装成了fabric格式的图片
-            console.log(img)
-            this.toCraftPage(img)
-          });
-        }) */
       };
       reader.readAsDataURL(file);
       e.target.value = "";
     },
     toCraftPage (img) {
+      // TODO: 可以增加根据所选择的类型设置指定的初始大小
       this.$router.push({
         name: "craft",
         params: {
