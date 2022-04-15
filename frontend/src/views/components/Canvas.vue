@@ -368,8 +368,6 @@ export default {
       };
       reader.readAsDataURL(file);
       e.target.value = "";
-
-
     },
 
     // 下载图片
