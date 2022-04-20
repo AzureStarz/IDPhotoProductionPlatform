@@ -5,6 +5,7 @@ import com.example.springbootexample.model.Photo;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.parameters.P;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import java.io.File;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,6 +25,7 @@ public class Hello {
     public String segment(@RequestBody Map<String, String> params){
         String imgStr = params.get("imgStr");
         String fileName = params.get("fileName");
+        Integer userId = Integer.parseInt(params.get("userId"));
         String url = "https://aip.baidubce.com/rest/2.0/image-classify/v1/body_seg";
         try {
 
@@ -41,6 +44,7 @@ public class Hello {
             String originPath = FileUtil.GetFrontEndPath(fileName);
             Renew.GenerateImage(imgStr, originPath);
             Photo originPhoto = new Photo();
+            originPhoto.setUserId(userId);
             originPhoto.setPhotoName(fileName);
             originPhoto.setPhotoPath(originPath);
             photoDao.savePhoto(originPhoto);
@@ -50,6 +54,7 @@ public class Hello {
             String newPath = FileUtil.GetFrontEndPath(newFilename);
             Renew.GenerateImage(base64NewImg, newPath);
             Photo newPhoto = new Photo();
+            originPhoto.setUserId(userId);
             newPhoto.setPhotoPath(newPath);
             newPhoto.setPhotoName(newFilename);
             photoDao.savePhoto(newPhoto);
@@ -62,4 +67,8 @@ public class Hello {
         //return "hello world <img src=\"images/test.jpg\">";
     }
 
+    @PostMapping("/api/getPhotos")
+    public List<String> getPhotos(@Param("userId") Integer userId){
+        return photoDao.getPhotosWithUserId(userId);
+    }
 }
