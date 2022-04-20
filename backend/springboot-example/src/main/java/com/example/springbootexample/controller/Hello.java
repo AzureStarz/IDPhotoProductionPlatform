@@ -1,7 +1,11 @@
 package com.example.springbootexample.controller;
 
+import com.example.springbootexample.dao.PhotoDao;
+import com.example.springbootexample.model.Photo;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.*;
 import com.example.springbootexample.Utils.*;
@@ -13,6 +17,8 @@ import java.util.Map;
 
 @RestController
 public class Hello {
+    @Autowired
+    private PhotoDao photoDao;
     @PostMapping("/api/seg")
     public String segment(@RequestBody Map<String, String> params){
         String imgStr = params.get("imgStr");
@@ -32,10 +38,22 @@ public class Hello {
             //System.out.println(result);
             JsonElement foreground = obj.get("foreground");
 
-            Renew.GenerateImage(imgStr,FileUtil.GetFrontEndPath(fileName));
+            String originPath = FileUtil.GetFrontEndPath(fileName);
+            Renew.GenerateImage(imgStr, originPath);
+            Photo originPhoto = new Photo();
+            originPhoto.setPhotoName(fileName);
+            originPhoto.setPhotoPath(originPath);
+            photoDao.savePhoto(originPhoto);
+
             String base64NewImg = GsonUtils.toJson(foreground);
-            Renew.GenerateImage(base64NewImg, FileUtil.GetFrontEndPath("modify-"+ fileName));
-            return "modify-" + fileName;
+            String newFilename = "modify-"+ fileName;
+            String newPath = FileUtil.GetFrontEndPath(newFilename);
+            Renew.GenerateImage(base64NewImg, newPath);
+            Photo newPhoto = new Photo();
+            newPhoto.setPhotoPath(newPath);
+            newPhoto.setPhotoName(newFilename);
+            photoDao.savePhoto(newPhoto);
+            return newFilename;
         } catch (Exception e) {
             e.printStackTrace();
         }
