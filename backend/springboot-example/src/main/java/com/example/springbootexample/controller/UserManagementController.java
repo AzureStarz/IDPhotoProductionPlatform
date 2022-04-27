@@ -26,10 +26,12 @@ public class UserManagementController {
         return loginService.reg(username, password);
     }
 
-    @PostMapping("/api/login")
+    /*@PostMapping("/api/login")
     public String login(@RequestBody Map<String, String> params) {
         String username = params.get("username");
         String password = params.get("password");
+        System.out.println(username);
+        System.out.println(password);
         return loginService.login(username, password);
-    }
+    }*/
 }

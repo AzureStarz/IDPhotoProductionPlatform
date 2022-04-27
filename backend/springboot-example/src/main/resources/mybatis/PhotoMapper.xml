@@ -4,8 +4,8 @@
 <mapper namespace="com.example.springbootexample.dao.PhotoDao">
 
     <insert id="savePhoto">
-        insert into photo (photoName, photoPath)
-        values ("${photoName}","${photoPath}");
+        insert into photo (userId, photoName, photoPath)
+        values ("${userId}", "${photoName}","${photoPath}");
     </insert>
 
     <select id="getPhotosWithUserId">

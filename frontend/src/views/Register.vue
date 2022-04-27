@@ -110,8 +110,7 @@ export default {
         username: this.username,
         password: this.password
       }
-      console.log(params);
-      this.$axios.post(registerUrl, params).then(res => {
+      /* this.$axios.post(registerUrl, params).then(res => {
         let status = res.data;
         console.log(status)
         if (status == "success") {
@@ -120,6 +119,15 @@ export default {
         }
       }).catch(error => {
         console.log(error.message);
+      }) */
+      this.$axios.post(registerUrl, params).then((res) => {
+        if (res.data === 'usernameAlready') {
+          this.$message.error({ message: '用户名已注册！', duration: 1000 });
+        } else if (res.data === 'success') {
+          this.$message.success({ message: '注册成功！', duration: 1000 });
+          console.log("register successfully");
+          this.$router.replace('/login');
+        }
       })
     }
   },

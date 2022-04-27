@@ -107,7 +107,7 @@
 </template>
 <script>
 export default {
-  data() {
+  data () {
     return {
       username: "",
       password: ""
@@ -119,20 +119,31 @@ export default {
     },
     login () {
       let loginUrl = '/api/login';
-        let params = {
-          username: this.username,
-          password: this.password
+      /* let params = {
+        username: this.username,
+        password: this.password
+      } */
+      /* this.$axios.post(loginUrl, params).then(res => {
+        let status = res.data;
+        console.log(status)
+        if (status == "success") {
+          console.log("Login successfully");
+          this.$router.push('/');
         }
-        this.$axios.post(loginUrl, params).then(res => {
-          let status = res.data;
-          console.log(status)
-          if (status == "success") {
-            console.log("Login successfully");
-            this.$router.push('/');
-          }
-        }).catch(error => {
-          console.log(error.message);
-        })
+      }).catch(error => {
+        console.log(error.message);
+      }) */
+      this.$axios.post('/api/login?username=' + this.username + '&password=' + this.password).then((res) => {
+        if (res.data === 'wrong') {
+          this.$message.error({ message: '账户名或密码输入错误！', duration: 1000 });
+        }
+        else if (res.data === 'success') {
+          this.$message.success({ message: '登录成功！', duration: 1000 });
+          this.$router.replace('/');
+          this.$store.commit('login', this.username);
+          this.useId
+        }
+      })
     }
   }
 };
