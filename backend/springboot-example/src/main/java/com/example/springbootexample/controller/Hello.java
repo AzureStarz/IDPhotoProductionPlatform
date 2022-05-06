@@ -54,7 +54,7 @@ public class Hello {
             String newPath = FileUtil.GetFrontEndPath(newFilename);
             Renew.GenerateImage(base64NewImg, newPath);
             Photo newPhoto = new Photo();
-            originPhoto.setUserId(userId);
+            newPhoto.setUserId(userId);
             newPhoto.setPhotoPath(newPath);
             newPhoto.setPhotoName(newFilename);
             photoDao.savePhoto(newPhoto);
