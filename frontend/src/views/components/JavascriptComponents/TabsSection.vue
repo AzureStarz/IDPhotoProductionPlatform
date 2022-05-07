@@ -52,12 +52,6 @@
           </tab-pane>
         </card>
       </tabs>
-      <base-button
-        @click="toCraft()"
-        type="info"
-      >
-        开始制作吧！
-      </base-button>
     </div>
     <!-- <div class="col-lg-6 mt-5 mt-lg-0">
             <div class="mb-3">
@@ -111,11 +105,6 @@ export default {
       imgUrl4: 'https://st-gdx.dancf.com/assets/20200102-161834-57b6.jpg',
       imgUrl5: 'https://st-gdx.dancf.com/assets/20200102-161606-2bb2.jpg',
       imgUrl6: 'https://st-gdx.dancf.com/assets/20200102-161907-9172.jpg'
-    }
-  },
-  methods: {
-    toCraft () {
-      this.$router.push('/diycraft');
     }
   }
 };

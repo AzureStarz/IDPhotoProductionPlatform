@@ -35,6 +35,7 @@
 
       <ul class="navbar-nav navbar-nav-hover align-items-lg-center">
         <base-dropdown
+          v-if="this.$store.state.login"
           class="nav-item"
           menu-classes="dropdown-menu-xl"
         >
@@ -46,35 +47,35 @@
             role="button"
           >
             <i class="ni ni-ui-04 d-lg-none"></i>
-            <span class="nav-link-inner--text">Components</span>
+            <span class="nav-link-inner--text">Craft</span>
           </a>
           <div class="dropdown-menu-inner">
-            <a
-              href="https://demos.creative-tim.com/vue-argon-design-system/documentation/"
+            <router-link
+              to="/landing"
               class="media d-flex align-items-center"
             >
               <div class="icon icon-shape bg-gradient-primary rounded-circle text-white">
                 <i class="ni ni-spaceship"></i>
               </div>
               <div class="media-body ml-3">
-                <h6 class="heading text-primary mb-md-1">Getting started</h6>
-                <p class="description d-none d-md-inline-block mb-0">Get started with Bootstrap, the
-                  world's most popular framework for building responsive sites.</p>
+                <h6 class="heading text-primary mb-md-1">快来制作证件照吧！</h6>
+                <p class="description d-none d-md-inline-block mb-0">AI自动抠图, 如你所愿
+                  为抠图而设计，满足常规作图需求，效果对比一目了然，细节处理绝不含糊</p>
               </div>
-            </a>
-            <a
-              href="https://demos.creative-tim.com/vue-argon-design-system/documentation/"
+            </router-link>
+            <router-link
+              to="/diycraft"
               class="media d-flex align-items-center"
             >
               <div class="icon icon-shape bg-gradient-warning rounded-circle text-white">
                 <i class="ni ni-ui-04"></i>
               </div>
               <div class="media-body ml-3">
-                <h5 class="heading text-warning mb-md-1">Components</h5>
-                <p class="description d-none d-md-inline-block mb-0">Learn how to use Argon
-                  compiling Scss, change brand colors and more.</p>
+                <h5 class="heading text-warning mb-md-1">快来创作你的个性照片吧！</h5>
+                <p class="description d-none d-md-inline-block mb-0">AI自动抠图, 如你所愿
+                  为抠图而设计，满足常规作图需求，效果对比一目了然，细节处理绝不含糊</p>
               </div>
-            </a>
+            </router-link>
           </div>
         </base-dropdown>
         <base-dropdown
@@ -89,24 +90,32 @@
             role="button"
           >
             <i class="ni ni-collection d-lg-none"></i>
-            <span class="nav-link-inner--text">Examples</span>
+            <span class="nav-link-inner--text">Menu</span>
           </a>
-          <router-link
+          <!-- <router-link
             to="/landing"
             class="dropdown-item"
-          >Landing</router-link>
+          >Landing</router-link> -->
           <router-link
+            v-if="$store.state.login"
             to="/profile"
             class="dropdown-item"
           >Profile</router-link>
           <router-link
+            v-if="!$store.state.login"
             to="/login"
             class="dropdown-item"
           >Login</router-link>
           <router-link
+            v-if="!$store.state.login"
             to="/register"
             class="dropdown-item"
           >Register</router-link>
+          <button
+            @click="logout()"
+            v-if="$store.state.login"
+            class="dropdown-item"
+          >Logout</button>
         </base-dropdown>
       </ul>
       <ul class="navbar-nav align-items-lg-center ml-lg-auto">
@@ -164,6 +173,7 @@
         </li>
         <li class="nav-item d-none d-lg-block ml-lg-4">
           <div
+            v-if="!$store.state.login"
             @click="gotoSignup"
             target="_blank"
             rel="noopener"
@@ -173,6 +183,18 @@
               <i class="fa fa-sign-in mr-2"></i>
             </span>
             <span class="nav-link-inner--text">登录/注册</span>
+          </div>
+          <div
+            v-if="$store.state.login"
+            @click="gotoProfile"
+            target="_blank"
+            rel="noopener"
+            class="btn btn-neutral btn-icon"
+          >
+            <span class="btn-inner--icon">
+              <i class="fa fa-sign-in mr-2"></i>
+            </span>
+            <span class="nav-link-inner--text">{{$store.state.userName}}的个人中心</span>
           </div>
         </li>
       </ul>
@@ -188,6 +210,13 @@ export default {
   methods: {
     gotoSignup () {
       this.$router.push('/login')
+    },
+    gotoProfile () {
+      this.$router.push('/profile')
+    },
+    logout () {
+      this.$store.commit('logoutFun')
+      this.$$router.replace('/')
     }
   },
   components: {

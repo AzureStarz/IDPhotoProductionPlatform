@@ -20,3 +20,4 @@ yarn-error.log*
 *.sln
 *.sw*
 projectDocs/~$需求分析文档v3.docx
+frontend/src/views/Login_backp1.vue
