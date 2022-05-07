@@ -68,7 +68,12 @@ public class Hello {
     }
 
     @PostMapping("/api/getPhotos")
-    public List<String> getPhotos(@Param("userId") Integer userId){
+    public List<Photo> getPhotos(@Param("userId") Integer userId){
         return photoDao.getPhotosWithUserId(userId);
+    }
+
+    @PostMapping("/api/deletePhoto")
+    public void deletePhoto(@Param("photoID") Integer photoID){
+        photoDao.deletePhoto(photoID);
     }
 }

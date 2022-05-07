@@ -9,5 +9,7 @@ import java.util.List;
 public interface PhotoDao {
     void savePhoto(Photo photo);
 
-    List<String> getPhotosWithUserId(Integer userId);
+    List<Photo> getPhotosWithUserId(Integer userId);
+
+    void deletePhoto(Integer photoID);
 }
