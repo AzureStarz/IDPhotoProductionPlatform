@@ -22,7 +22,6 @@ public class User implements UserDetails{
     private String email;
     private Integer phoneNum;
     private String password;
-    private String status;
     private String randomCode;
     private Date createTime;
     private Date lastLoginTime;

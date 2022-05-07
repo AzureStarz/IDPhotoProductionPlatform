@@ -19,7 +19,7 @@ import java.util.Map;
 
 @RestController
 public class Hello {
-    @Autowired
+    @Autowired(required=false)
     private PhotoDao photoDao;
     @PostMapping("/api/seg")
     public String segment(@RequestBody Map<String, String> params){

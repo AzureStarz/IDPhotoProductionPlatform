@@ -1,5 +1,6 @@
 package com.example.springbootexample.controller;
 
+import com.example.springbootexample.model.User;
 import com.example.springbootexample.service.LoginService;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,21 +18,10 @@ public class UserManagementController {
         this.loginService = loginService;
     }
     @PostMapping("/api/register")
-    /*public String register(@Param("username") String username, @Param("password") String password) {
-        return loginService.reg(username, password);
-    }*/
-    public String register(@RequestBody Map<String, String> params) {
-        String username = params.get("username");
-        String password = params.get("password");
-        return loginService.reg(username, password);
+    public String register(@RequestBody User user) {
+        String username = user.getUsername();
+        String password = user.getPassword();
+        String email = user.getEmail();
+        return loginService.reg(username, password, email);
     }
-
-    /*@PostMapping("/api/login")
-    public String login(@RequestBody Map<String, String> params) {
-        String username = params.get("username");
-        String password = params.get("password");
-        System.out.println(username);
-        System.out.println(password);
-        return loginService.login(username, password);
-    }*/
 }
