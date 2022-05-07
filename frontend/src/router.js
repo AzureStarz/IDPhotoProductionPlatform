@@ -19,6 +19,9 @@ export default new Router({
     {
       path: "/",
       name: "components",
+      meta: {
+        requireAuth: false
+      },
       components: {
         header: AppHeader,
         default: Components,
@@ -28,6 +31,9 @@ export default new Router({
     {
       path: "/craft",
       name: "craft",
+      meta: {
+        requireAuth: true
+      },
       components: {
         header: AppHeader,
         default: Craft,
@@ -37,6 +43,9 @@ export default new Router({
     {
       path: "/diycraft",
       name: "diycraft",
+      meta: {
+        requireAuth: true
+      },
       components: {
         header: AppHeader,
         default: DIYCraft,
@@ -46,6 +55,9 @@ export default new Router({
     {
       path: "/landing",
       name: "landing",
+      meta: {
+        requireAuth: true
+      },
       components: {
         header: AppHeader,
         default: Landing,
@@ -55,6 +67,9 @@ export default new Router({
     {
       path: "/login",
       name: "login",
+      meta: {
+        requireAuth: false
+      },
       components: {
         header: AppHeader,
         default: Login,
@@ -64,6 +79,9 @@ export default new Router({
     {
       path: "/register",
       name: "register",
+      meta: {
+        requireAuth: false
+      },
       components: {
         header: AppHeader,
         default: Register,
@@ -73,6 +91,9 @@ export default new Router({
     {
       path: "/profile",
       name: "profile",
+      meta: {
+        requireAuth: true
+      },
       components: {
         header: AppHeader,
         default: Profile,
@@ -82,6 +103,9 @@ export default new Router({
     {
       path: "/camera",
       name: "camera",
+      meta: {
+        requireAuth: true
+      },
       components: {
         header: AppHeader,
         default: CameraPage,

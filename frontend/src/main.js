@@ -31,6 +31,17 @@ Vue.prototype.$axios = axios;
 Vue.use(Argon);
 Vue.use(ElementUI);
 Vue.use(fabric);
+router.beforeEach((to,from,next)=>{
+	if(to.meta.requireAuth){
+		if(store.state.login){
+			next()
+		}else{
+			next({path:'/'})
+		}
+	}else{
+		next()
+	}
+})
 new Vue({
   router,
   store,

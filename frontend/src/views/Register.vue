@@ -59,6 +59,9 @@
                   alternative
                   class="mb-3"
                   placeholder="Email"
+                  :valid="valid"
+                  v-model="email"
+                  @blur="checkEmailValid()"
                   addon-left-icon="ni ni-email-83"
                 >
                 </base-input>
@@ -72,10 +75,17 @@
                 </base-input>
                 <div class="text-muted font-italic">
                   <small>password strength:
-                    <span class="text-success font-weight-700">strong</span>
+                    <span
+                      v-if="password.length > 5"
+                      class="text-success font-weight-700"
+                    >strong</span>
+                    <span
+                      v-if="password.length <= 5"
+                      class="font-weight-700"
+                    >weak</span>
                   </small>
                 </div>
-                <base-checkbox>
+                <base-checkbox v-model="check">
                   <span>I agree with the
                     <a href="#">Privacy Policy</a>
                   </span>
@@ -96,39 +106,63 @@
   </section>
 </template>
 <script>
+
 export default {
   data () {
     return {
       username: "",
-      password: ""
+      password: "",
+      email: "",
+      check: false,
+      valid: false
     }
   },
   methods: {
     register () {
-      let registerUrl = '/api/register';
-      let params = {
-        username: this.username,
-        password: this.password
+      if (this.check) {
+        if (this.valid) {
+          let registerUrl = '/api/register';
+          let params = {
+            username: this.username,
+            password: this.password
+          }
+          /* this.$axios.post(registerUrl, params).then(res => {
+            let status = res.data;
+            console.log(status)
+            if (status == "success") {
+              console.log("register successfully");
+              this.$router.push('/login');
+            }
+          }).catch(error => {
+            console.log(error.message);
+          }) */
+          this.$axios.post(registerUrl, params).then((res) => {
+            if (res.data === 'usernameAlready') {
+              this.$message.error({ message: '用户名已注册！', duration: 1000 });
+            } else if (res.data === 'success') {
+              this.$message.success({ message: '注册成功！', duration: 1000 });
+              console.log("register successfully");
+              this.$router.replace('/login');
+            }
+          })
+        } else {
+          this.$message.error({ message: '表单验证不通过！', duration: 1000 })
+        }
+      } else {
+        this.$message.error({ message: '请同意用户协议！', duration: 1000 })
       }
-      /* this.$axios.post(registerUrl, params).then(res => {
-        let status = res.data;
-        console.log(status)
-        if (status == "success") {
-          console.log("register successfully");
-          this.$router.push('/login');
-        }
-      }).catch(error => {
-        console.log(error.message);
-      }) */
-      this.$axios.post(registerUrl, params).then((res) => {
-        if (res.data === 'usernameAlready') {
-          this.$message.error({ message: '用户名已注册！', duration: 1000 });
-        } else if (res.data === 'success') {
-          this.$message.success({ message: '注册成功！', duration: 1000 });
-          console.log("register successfully");
-          this.$router.replace('/login');
-        }
-      })
+    },
+    checkEmailValid () {
+      var regEmail = /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
+      if (this.email != '' && !regEmail.test(this.email)) {
+        this.$message({
+          message: '邮箱格式不正确',
+          type: 'error'
+        })
+        this.valid = false
+      } else {
+        this.valid = true
+      }
     }
   },
 }

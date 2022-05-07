@@ -140,8 +140,10 @@ export default {
         else if (res.data === 'success') {
           this.$message.success({ message: '登录成功！', duration: 1000 });
           this.$router.replace('/');
-          this.$store.commit('login', this.username);
-          this.useId
+          this.$store.commit('loginFun', this.username);
+          this.$store.commit('setToken', JSON.stringify(res.data.token))
+          /* this.$store.commit('')
+          this.useId */
         }
       })
     }

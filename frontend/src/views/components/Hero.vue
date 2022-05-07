@@ -48,7 +48,7 @@
           <div class="col-sm-4">
             <span class="text-white alpha-7 ml-3">Star us on</span>
             <a
-              href="https://github.com/creativetimofficial/argon-design-system"
+              href="https://github.com/AzureStarz/IDPhotoProductionPlatform"
               target="_blank"
               title="Support us on Github"
             >
@@ -81,7 +81,13 @@
 export default {
   methods: {
     toMain () {
+      this.authAlert()
       this.$router.push('/landing')
+    },
+    authAlert () {
+      if (!this.$store.state.login) {
+        this.$message.error({ message: '请登录该平台再进行操作！', duration: 1000 });
+      }
     }
   }
 };

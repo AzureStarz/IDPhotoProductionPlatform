@@ -26,8 +26,17 @@ export default {
   },
   methods: {
     toCraft () {
+      this.authAlert()
       this.$router.push('/diycraft');
+    },
+    authAlert () {
+      if (!this.$store.state.login) {
+        this.$message.error({ message: '请登录该平台再进行操作！', duration: 1000 });
+      }
     }
+  },
+  mounted () {
+    this.authAlert()
   }
 };
 </script>
