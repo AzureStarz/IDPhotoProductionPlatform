@@ -156,8 +156,10 @@ let editorCanvas = "";
 let rect = null;
 let size = null;
 let originalSize = null;
-let targetImg = "";
 let targetFileName = "";
+let targetOriginImg = "";
+let currentImg = null;
+let segImg = "";
 fabric.Object.prototype.set({
   cornerStrokeColor: "#66b0ef",
   cornerColor: "#60abec",
@@ -317,10 +319,11 @@ export default {
         transparentCorners: false,
       });
       if (this.$route.params.img != undefined) {
-        let uploadImage = this.$route.params.img;
-        let uploadImageUrl = this.$route.params.imgUrl
+        currentImg = this.$route.params.img;
+        /* let uploadImageUrl = this.$route.params.imgUrl */
         targetFileName = this.$route.params.fileName
-        let ext = targetFileName.substring(targetFileName.lastIndexOf(".") + 1, targetFileName.length)
+        targetOriginImg = this.$route.params.orginImg
+        /* let ext = targetFileName.substring(targetFileName.lastIndexOf(".") + 1, targetFileName.length)
         console.log(ext)
         console.log(targetFileName)
         this.getUrlBase64(uploadImageUrl, ext, function (base64) {
@@ -328,13 +331,13 @@ export default {
           targetImg = targetImg.replace(/^data:image\/\w+;base64,/, "");
           console.log(base64);//base64编码值
           console.log(targetImg)
-        });
-        originalSize = { height: uploadImage.height, width: uploadImage.width };
-        uploadImage.top = 0;
-        uploadImage.left = 0;
-        uploadImage.scaleX = 0.3;
-        uploadImage.scaleY = 0.3;
-        editorCanvas.add(uploadImage);
+        }); */
+        originalSize = { height: currentImg.height, width: currentImg.width };
+        currentImg.top = 0;
+        currentImg.left = 0;
+        currentImg.scaleX = 0.3;
+        currentImg.scaleY = 0.3;
+        editorCanvas.add(currentImg);
       }
       // TODO: 这里利用传进来的参数替换“一寸”
       // 根据不同证件照要求创建框框
@@ -360,7 +363,7 @@ export default {
         let data = e.target.result;
         // 保证原图片能够正常存储下来
         var imgs = data.replace(/^data:image\/\w+;base64,/, "");
-        targetImg = imgs
+        targetOriginImg = imgs
         let fileName = file.name;
         targetFileName = fileName
         let userId = this.$store.state.userId
@@ -377,12 +380,14 @@ export default {
           fabric.Image.fromURL(imgUrl, (img) => {
             // 封装成了fabric格式的图片
             console.log(img);
-            originalSize = { height: img.height, width: img.width };
-            img.top = 0;
-            img.left = 0;
-            img.scaleX = 0.3;
-            img.scaleY = 0.3;
-            editorCanvas.add(img).renderAll();
+            editorCanvas.remove(currentImg)
+            currentImg = img
+            originalSize = { height: currentImg.height, width: currentImg.width };
+            currentImg.top = 0;
+            currentImg.left = 0;
+            currentImg.scaleX = 0.3;
+            currentImg.scaleY = 0.3;
+            editorCanvas.add(currentImg).renderAll();
             this.handleSizeSelection();
             this.fullscreenLoading = false;
           });
@@ -555,28 +560,18 @@ export default {
       }
       this.templateData.bgColor = mbgColor;
     },
-    /**
-     *
-     * @param url 图片路径
-     * @param ext 图片格式
-     * @param callback 结果回调
-     */
-    getUrlBase64 (url, ext, callback) {
-      var canvas = document.createElement("canvas");   //创建canvas DOM元素
-      var ctx = canvas.getContext("2d");
-      var img = new Image;
-      img.crossOrigin = 'Anonymous';
-      img.src = url;
-      img.onload = function () {
-        /* canvas.height = 60; //指定画板的高度,自定义
-        canvas.width = 85; //指定画板的宽度，自定义
-         */
-        ctx.drawImage(img, 0, 0, 60, 85); //参数可自定义
-        console.log(ext)
-        var dataURL = canvas.toDataURL("image/" + ext);
-        callback.call(this, dataURL); //回掉函数获取Base64编码
-        canvas = null;
+    urlToBlob (the_url, callback) {
+      let xhr = new XMLHttpRequest();
+      xhr.open("get", the_url, true);
+      xhr.responseType = "blob";
+      xhr.onload = function () {
+        if (this.status == 200) {
+          if (callback) {
+            callback(this.response);
+          }
+        }
       };
+      xhr.send();
     },
     /**
      * @param imgStr base64图片格式
@@ -584,12 +579,12 @@ export default {
      * @param userId 登陆用户的ID
      */
     beautify () {
-      console.log(targetImg)
+      console.log(targetOriginImg)
       this.fullscreenLoading = true;
       let userId = this.$store.state.userId
       let beautifyURL = '/api/beautify';
       let params = {
-        imgStr: targetImg,
+        imgStr: targetOriginImg,
         fileName: targetFileName,
         userId: userId
       }
@@ -597,7 +592,57 @@ export default {
         let imgUrl = 'img\\photos\\';
         imgUrl += res.data;
         console.log(imgUrl)
-        fabric.Image.fromURL(imgUrl, (img) => {
+
+        /* let ext = imgUrl.substring(imgUrl.lastIndexOf(".") + 1, imgUrl.length)
+        console.log(ext)
+        this.getUrlBase64(imgUrl, ext, function (base64) {
+          segImg = base64 // base64.replace(/^data:image\/\w+;base64,/, "");
+          segImg = segImg.replace(/^data:image\/\w+;base64,/, "");
+        }); */
+        this.urlToBlob(imgUrl, function (img_blob) {
+          var reader = new FileReader();
+          reader.readAsDataURL(img_blob);    // 解析成base64格式
+          reader.onload = function () {
+            console.log(this.result);        // 解析后的数据，如下图
+            segImg = this.result
+            segImg = segImg.replace(/^data:image\/\w+;base64,/, "");
+          }
+        });
+
+        setTimeout(() => {
+          console.log(segImg)
+          let segURL = '/api/seg';
+          let params = {
+            imgStr: segImg,
+            fileName: targetFileName,
+            userId: userId
+          }
+          this.$axios.post(segURL, params).then(res => {
+            let imgUrl = 'img\\photos\\';
+            imgUrl += res.data;
+            console.log(imgUrl)
+            fabric.Image.fromURL(imgUrl, (img) => {
+              // 封装成了fabric格式的图片
+              console.log(img);
+              editorCanvas.remove(currentImg)
+              currentImg = img
+              originalSize = { height: currentImg.height, width: currentImg.width };
+              currentImg.top = 0;
+              currentImg.left = 0;
+              currentImg.scaleX = 0.3;
+              currentImg.scaleY = 0.3;
+              editorCanvas.add(currentImg).renderAll();
+              this.handleSizeSelection();
+              this.fullscreenLoading = false;
+            });
+          }).catch(error => {
+            console.log(error.message);
+          })
+        }, 1000);
+
+
+
+        /* fabric.Image.fromURL(imgUrl, (img) => {
           // 封装成了fabric格式的图片
           console.log(img);
           originalSize = { height: img.height, width: img.width };
@@ -608,7 +653,7 @@ export default {
           editorCanvas.add(img).renderAll();
           this.handleSizeSelection();
           this.fullscreenLoading = false;
-        });
+        }); */
       }).catch(error => {
         console.log(error.message);
       })
