@@ -108,7 +108,7 @@ public class Hello {
             String line;
             while ((line = in.readLine()) != null){
                 result.append(line);
-                //System.out.println(line);
+                System.out.println(line);
             }
         }catch (Exception e){
             e.printStackTrace();

@@ -10,12 +10,18 @@ const store = new Vuex.Store({
         //存放的键值对就是所要管理的状态
         userName:'',
         login: false,
+        userId: 1,
         token:''  //初始化token
     },
     mutations: {
         loginFun (state, userName) {
             state.userName = userName
+            localStorage.userName = userName
             state.login  = true
+        },
+        setUserId (state, userId) {
+            state.userId = userId
+            localStorage.userId = userId
         },
         setToken(state, token) {
             state.token = token
@@ -23,6 +29,7 @@ const store = new Vuex.Store({
         },
         logoutFun (state) {
             state.userName = "未登录"
+            localStorage.clear();
             state.login  = false
         }
     },
@@ -34,6 +41,9 @@ const store = new Vuex.Store({
                 state.token = localStorage.getItem('token')
             }
             return state.token
+        },
+        getUserId(state) {
+            return state.userId
         }
     },
 })

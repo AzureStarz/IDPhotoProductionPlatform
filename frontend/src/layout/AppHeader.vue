@@ -216,7 +216,16 @@ export default {
     },
     logout () {
       this.$store.commit('logoutFun')
-      this.$$router.replace('/')
+      this.$router.replace('/')
+    }
+  },
+  mounted () {
+    console.log(localStorage.getItem('userName'))
+    if (localStorage.getItem('userName')) {
+      this.$store.commit('loginFun', localStorage.getItem('userName'))
+      this.$store.commit('setUserId', localStorage.getItem('userId'))
+    } else {
+      this.$store.commit('logoutFun')
     }
   },
   components: {

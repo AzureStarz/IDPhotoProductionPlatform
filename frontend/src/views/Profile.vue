@@ -78,7 +78,7 @@
                     shadow
                     body-classes="py-5"
                   >
-                    这是历史记录
+                    {{$store.getters.getUserId}}
                   </card>
                   <card
                     class="border-0"

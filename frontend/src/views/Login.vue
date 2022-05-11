@@ -110,7 +110,8 @@ export default {
   data () {
     return {
       username: "",
-      password: ""
+      password: "",
+      userId: ""
     }
   },
   methods: {
@@ -138,15 +139,28 @@ export default {
           this.$message.error({ message: '账户名或密码输入错误！', duration: 1000 });
         }
         else if (res.data === 'success') {
-          this.$message.success({ message: '登录成功！', duration: 1000 });
-          this.$router.replace('/');
-          this.$store.commit('loginFun', this.username);
+          this.$axios.get('/api/getUser').then((res) => {
+            this.userId = res.data
+            this.$message.success({ message: '登录成功！', duration: 1000 });
+            this.$router.replace('/');
+            console.log(this.userId)
+            this.$store.commit('loginFun', this.username);
+            localStorage.setItem('userName', JSON.stringify(this.username))
+            localStorage.setItem('login', JSON.stringify(true))
+            localStorage.setItem('userId', JSON.stringify(this.userId))
+            this.$store.commit('setUserId', this.userId);
+            console.log(this.$store.state.userId)
+            console.log(JSON.parse(localStorage.getItem('userName')))
+            console.log(JSON.parse(localStorage.getItem('login')))
+            console.log(JSON.parse(localStorage.getItem('userId')))
+          })
           this.$store.commit('setToken', JSON.stringify(res.data.token))
           /* this.$store.commit('')
           this.useId */
         }
       })
     }
+
   }
 };
 </script>

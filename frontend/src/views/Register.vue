@@ -124,7 +124,8 @@ export default {
           let registerUrl = '/api/register';
           let params = {
             username: this.username,
-            password: this.password
+            password: this.password,
+            email: this.email
           }
           /* this.$axios.post(registerUrl, params).then(res => {
             let status = res.data;

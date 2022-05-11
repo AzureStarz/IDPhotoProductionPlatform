@@ -437,7 +437,7 @@ export default {
           fabric.Image.fromURL(imgUrl, (img) => {
             // 封装成了fabric格式的图片
             console.log(img)
-            this.toCraftPage(img)
+            this.toCraftPage(img, imgUrl, fileName)
           });
         }).catch(error => {
           console.log(error.message);
@@ -446,12 +446,14 @@ export default {
       reader.readAsDataURL(file);
       e.target.value = "";
     },
-    toCraftPage (img) {
+    toCraftPage (img, imgUrl, fileName) {
       // TODO: 可以增加根据所选择的类型设置指定的初始大小
       this.$router.push({
         name: "craft",
         params: {
-          img: img
+          img: img,
+          imgUrl: imgUrl,
+          fileName: fileName
         }
       })
     }
