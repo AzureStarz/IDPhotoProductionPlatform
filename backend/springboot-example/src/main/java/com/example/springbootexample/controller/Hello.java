@@ -2,6 +2,7 @@ package com.example.springbootexample.controller;
 
 import com.example.springbootexample.dao.PhotoDao;
 import com.example.springbootexample.model.Photo;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +76,7 @@ public class Hello {
         String imgStr = params.get("imgStr");
         String fileName = params.get("fileName");
         Integer userId = Integer.parseInt(params.get("userId"));
-        String imagePath = "lib/time.jpg";
+
 
         OutputStreamWriter out = null;
         BufferedReader in = null;
@@ -126,7 +127,10 @@ public class Hello {
         }
         String newFilename = "beautify-"+ fileName;
         String newPath = FileUtil.GetFrontEndPath(newFilename);
-        String base64NewImg=result.toString();
+        JsonObject obj = GsonUtils.fromJson(result.toString(), JsonObject.class);
+        JsonArray media_info_list = obj.getAsJsonArray("media_info_list");
+        JsonObject media_info = (JsonObject) media_info_list.get(0);
+        String base64NewImg = GsonUtils.toJson(media_info.get("media_data"));
         Renew.GenerateImage(base64NewImg, newPath);
         Photo newPhoto = new Photo();
         newPhoto.setUserId(userId);
