@@ -139,6 +139,7 @@ public class Hello {
         photoDao.savePhoto(newPhoto);
         return newFilename;
     }
+
     @PostMapping("/api/getPhotos")
     public List<Photo> getPhotos(@Param("userId") Integer userId){
         return photoDao.getPhotosWithUserId(userId);

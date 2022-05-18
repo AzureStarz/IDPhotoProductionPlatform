@@ -8,8 +8,15 @@
         values ("${userId}", "${photoName}","${photoPath}");
     </insert>
 
-    <select id="getPhotosWithUserId">
-        select * from photo where userId = #{userId};
+    <resultMap id="photoQueryMap" type="com.example.springbootexample.model.Photo">
+        <id column="photoID" jdbcType="INTEGER" property="photoID" />
+        <result column="photoPath" jdbcType="VARCHAR" property="photoPath" />
+        <result column="userId" jdbcType="INTEGER" property="userId" />
+        <result column="photoName" jdbcType="VARCHAR" property="photoName" />
+    </resultMap>
+
+    <select id="getPhotosWithUserId" resultMap="photoQueryMap">
+        select photoID, userId, photoName, photoPath from photo where userId = #{userId};
     </select>
 
     <delete id="deletePhoto">
