@@ -51,7 +51,7 @@
                     <span class="description">Friends</span>
                   </div>
                   <div>
-                    <span class="heading">{{this.photos.length}}</span>
+                    <span class="heading">{{this.list_len}}</span>
                     <span class="description">Photos</span>
                   </div>
                   <div>
@@ -91,14 +91,12 @@
                 >
                   <el-card :body-style="{ padding: '5px' }">
                     <!-- <img :src='src' class="image" alt="" > -->
-                    <el-image
-                      :src="url"
-                      :preview-src-list="srcList"
-                    >
+                    <el-image :src="photo.photoPath">
                     </el-image>
 
                     <div class="bottom clearfix">
-                      <time class="time">{{ photo.photoName }}</time>
+                      <div>{{photo.photoName}}</div>
+                      <time class="time">{{ photo.updateTime }}</time>
                       <!-- <el-button type="text" class="button" v-on:click="amplificate" >点击放大</el-button> -->
                     </div>
                     <div class="text-center mt-12">
@@ -166,14 +164,7 @@ export default {
     return {
       photos: null,
       currentDate: new Date(),
-      src: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-      photoVisible: false,
-      url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-      srcList: [
-        'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-        'https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg'
-      ]
-
+      list_len: 0
     };
   },
   methods: {
@@ -182,7 +173,6 @@ export default {
       this.$axios.post('/api/deletePhoto?photoID=' + photoID).then((res) => {
         console.log("post")
         this.photos.remove(idx)
-
       })
     }
     /* //放大图片
@@ -198,7 +188,15 @@ export default {
   },
   mounted () {
     this.$axios.post('/api/getPhotos?userId=' + this.$store.state.userId).then((res) => {
-      this.photos = res.data
+      let tmp = res.data
+      // TODO
+      tmp.forEach(element => {
+        let name = element.photoName
+        let path = 'img/photos/' + name
+        element.photoPath = path
+      });
+      this.photos = tmp
+      this.list_len = this.photos.length
       console.log(this.photos)
       /* this.photos = photos */
     })

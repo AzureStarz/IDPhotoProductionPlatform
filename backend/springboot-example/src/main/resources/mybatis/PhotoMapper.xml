@@ -13,10 +13,11 @@
         <result column="photoPath" jdbcType="VARCHAR" property="photoPath" />
         <result column="userId" jdbcType="INTEGER" property="userId" />
         <result column="photoName" jdbcType="VARCHAR" property="photoName" />
+        <result column="updateTime" property="updateTime" />
     </resultMap>
 
     <select id="getPhotosWithUserId" resultMap="photoQueryMap">
-        select photoID, userId, photoName, photoPath from photo where userId = #{userId};
+        select photoID, userId, photoName, photoPath, updateTime from photo where userId = #{userId};
     </select>
 
     <delete id="deletePhoto">
