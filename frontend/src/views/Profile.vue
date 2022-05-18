@@ -61,51 +61,57 @@
                 </div>
               </div>
             </div>
-            <div class="text-center mt-5">
+            <div class="text-center mt-6">
               <h3>Jessica Jones
                 <span class="font-weight-light">, 27</span>
               </h3>
               <div class="h6 font-weight-300"><i class="ni location_pin mr-2"></i>Bucharest, Romania</div>
-              <div class="h6 mt-4"><i class="ni business_briefcase-24 mr-2"></i>Solution Manager - Creative Tim Officer</div>
-              <div><i class="ni education_hat mr-2"></i>University of Computer Science</div>
+
             </div>
-            <div class="mt-5 py-5 border-top text-center">
-              <div class="row justify-content-center">
-                <div class="col-lg-12">
-                  <card
-                    class="border-0"
-                    hover
-                    shadow
-                    body-classes="py-5"
-                  >
-                    {{$store.getters.getUserId}}
-                  </card>
-                  <card
-                    class="border-0"
-                    hover
-                    shadow
-                    body-classes="py-5"
-                  >
-                    这是历史记录
-                  </card>
-                  <card
-                    class="border-0"
-                    hover
-                    shadow
-                    body-classes="py-5"
-                  >
-                    这是历史记录
-                  </card>
-                  <card
-                    class="border-0"
-                    hover
-                    shadow
-                    body-classes="py-5"
-                  >
-                    这是历史记录
-                  </card>
-                </div>
-              </div>
+            <span></span>
+            <span></span>
+            <el-divider
+              content-position="center"
+              font-size="50px"
+            >
+              <i
+                class="fa fa-history fa-lg"
+                aria-hidden="true"
+              ></i>
+            </el-divider>
+            <span></span>
+            <span></span>
+            <span></span>
+            <div class="history-card">
+              <el-row>
+                <el-col
+                  :span="6"
+                  v-for="(photo, i) in photos"
+                  :key="i"
+                >
+                  <el-card :body-style="{ padding: '5px' }">
+                    <!-- <img :src='src' class="image" alt="" > -->
+                    <el-image
+                      :src="url"
+                      :preview-src-list="srcList"
+                    >
+                    </el-image>
+
+                    <div class="bottom clearfix">
+                      <time class="time">{{ photo.photoName }}</time>
+                      <!-- <el-button type="text" class="button" v-on:click="amplificate" >点击放大</el-button> -->
+                    </div>
+                    <div class="text-center mt-12">
+                      <el-popconfirm
+                        @confirm="deletePhoto(photo.photoID, i)"
+                        title="Are you sure to delete this?"
+                      >
+                        <el-button slot="reference">Delete</el-button>
+                      </el-popconfirm>
+                    </div>
+                  </el-card>
+                </el-col>
+              </el-row>
             </div>
           </div>
         </card>
@@ -113,8 +119,93 @@
     </section>
   </div>
 </template>
-<script>
-export default {};
-</script>
 <style>
+.time {
+  font-size: 13px;
+  color: #999;
+}
+
+.bottom {
+  margin-top: 13px;
+  line-height: 12px;
+}
+
+.button {
+  padding: 0;
+  float: right;
+}
+
+.image {
+  width: 100%;
+  display: inline-flex;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+}
+
+.clearfix:after {
+  clear: both;
+}
+
+.history-card {
+  display: inline-flex;
+}
 </style>
+
+<script>
+Array.remove = function (array, from, to) {
+  var rest = array.slice((to || from) + 1 || array.length);
+  array.length = from < 0 ? array.length + from : from;
+  return array.push.apply(array, rest);
+};
+export default {
+  data () {
+    return {
+      photos: null,
+      currentDate: new Date(),
+      src: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
+      photoVisible: false,
+      url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+      srcList: [
+        'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
+        'https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg'
+      ]
+
+    };
+  },
+  methods: {
+    deletePhoto (photoID, idx) {
+      console.log(photoID)
+      this.$axios.post('/api/deletePhoto?photoID=' + photoID).then((res) => {
+        console.log("post")
+        this.photos.remove(idx)
+
+      })
+    }
+    /* //放大图片
+    amplificate () {
+      return null;
+    },
+    showBigImage (imgUrl) {//点击图片函数，点击后，把photoVisible设置成true
+      if (imgUrl != "") {
+        this.photoVisible = true;
+        this.bigImgUrl = e.currentTarget.src;
+      }
+    } */
+  },
+  mounted () {
+    this.$axios.post('/api/getPhotos?userId=' + this.$store.state.userId).then((res) => {
+      this.photos = res.data
+      console.log(this.photos)
+      /* this.photos = photos */
+    })
+    /* this.$axios.post('/api/deletePhoto?photoID=' + 1).then((res) => {
+      photos = res.data
+      console.log(photos)
+    }) */
+  }
+}
+</script>>
