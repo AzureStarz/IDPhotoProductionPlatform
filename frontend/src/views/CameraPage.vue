@@ -104,7 +104,8 @@ export default {
       let segURL = '/api/seg';
       let params = {
         imgStr: imgs,
-        fileName: fileName
+        fileName: fileName,
+        userId: this.$store.state.userId
       }
       this.$axios.post(segURL, params).then(res => {
         let imgUrl = 'img\\photos\\';
