@@ -51,7 +51,7 @@
                     <span class="description">Friends</span>
                   </div>
                   <div>
-                    <span class="heading">10</span>
+                    <span class="heading">{{this.photos.length}}</span>
                     <span class="description">Photos</span>
                   </div>
                   <div>
@@ -62,10 +62,10 @@
               </div>
             </div>
             <div class="text-center mt-6">
-              <h3>Jessica Jones
-                <span class="font-weight-light">, 27</span>
+              <h3>{{$store.state.userName}}
+                <!-- <span class="font-weight-light">, 27</span> -->
               </h3>
-              <div class="h6 font-weight-300"><i class="ni location_pin mr-2"></i>Bucharest, Romania</div>
+              <div class="h6 font-weight-300"><i class="ni location_pin mr-2"></i>四川大学</div>
 
             </div>
             <span></span>
