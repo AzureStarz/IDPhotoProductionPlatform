@@ -10,7 +10,8 @@ public class FileUtil {
         String proj_path = System.getProperty("user.dir");
         int index = proj_path.indexOf("backend");
         proj_path = proj_path.substring(0,index);
-        String new_file_path = proj_path + "frontend\\public\\img\\photos\\" + fileName;
+        proj_path = proj_path.replace('\\','/');
+        String new_file_path = proj_path + "frontend/public/img/photos/" + fileName;
         return new_file_path;
         //return "fake";
     }
