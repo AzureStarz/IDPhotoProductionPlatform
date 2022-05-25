@@ -16,20 +16,20 @@ const store = new Vuex.Store({
     mutations: {
         loginFun (state, userName) {
             state.userName = userName
-            localStorage.userName = userName
+            sessionStorage.userName = userName
             state.login  = true
         },
         setUserId (state, userId) {
             state.userId = userId
-            localStorage.userId = userId
+            sessionStorage.userId = userId
         },
         setToken(state, token) {
             state.token = token
-            localStorage.token = token //同步存储token至localStorage
+            sessionStorage.token = token //同步存储token至sessionStorage
         },
         logoutFun (state) {
             state.userName = "未登录"
-            localStorage.clear();
+            sessionStorage.clear();
             state.login  = false
         }
     },
@@ -38,7 +38,7 @@ const store = new Vuex.Store({
         //判断是否有token,如果没有重新赋值，返回给state的token
         getToken(state) {
             if (!state.token) {
-                state.token = localStorage.getItem('token')
+                state.token = sessionStorage.getItem('token')
             }
             return state.token
         },

@@ -318,6 +318,12 @@ export default {
         backgroundColor: "#ffffff",
         transparentCorners: false,
       });
+      // TODO: 这里利用传进来的参数替换“一寸”
+      // 根据不同证件照要求创建框框
+      // 创建一个矩形对象
+      size = this.acquireSize("一寸")
+      rect = this.drawRect(size)
+      editorCanvas.add(rect);
       if (this.$route.params.img != undefined) {
         currentImg = this.$route.params.img;
         /* let uploadImageUrl = this.$route.params.imgUrl */
@@ -339,12 +345,6 @@ export default {
         currentImg.scaleY = 0.3;
         editorCanvas.add(currentImg);
       }
-      // TODO: 这里利用传进来的参数替换“一寸”
-      // 根据不同证件照要求创建框框
-      // 创建一个矩形对象
-      size = this.acquireSize("一寸")
-      rect = this.drawRect(size)
-      editorCanvas.add(rect);
       // editorCanvas.remove(rect);
       editorCanvas.preserveObjectStacking = true;
     },

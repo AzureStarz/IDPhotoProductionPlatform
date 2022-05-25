@@ -145,14 +145,14 @@ export default {
             this.$router.replace('/');
             console.log(this.userId)
             this.$store.commit('loginFun', this.username);
-            localStorage.setItem('userName', JSON.stringify(this.username))
-            localStorage.setItem('login', JSON.stringify(true))
-            localStorage.setItem('userId', JSON.stringify(this.userId))
+            sessionStorage.setItem('userName', JSON.stringify(this.username))
+            sessionStorage.setItem('login', JSON.stringify(true))
+            sessionStorage.setItem('userId', JSON.stringify(this.userId))
             this.$store.commit('setUserId', this.userId);
             console.log(this.$store.state.userId)
-            console.log(JSON.parse(localStorage.getItem('userName')))
-            console.log(JSON.parse(localStorage.getItem('login')))
-            console.log(JSON.parse(localStorage.getItem('userId')))
+            console.log(JSON.parse(sessionStorage.getItem('userName')))
+            console.log(JSON.parse(sessionStorage.getItem('login')))
+            console.log(JSON.parse(sessionStorage.getItem('userId')))
           })
           this.$store.commit('setToken', JSON.stringify(res.data.token))
           /* this.$store.commit('')

@@ -220,10 +220,10 @@ export default {
     }
   },
   mounted () {
-    console.log(localStorage.getItem('userName'))
-    if (localStorage.getItem('userName')) {
-      this.$store.commit('loginFun', localStorage.getItem('userName'))
-      this.$store.commit('setUserId', localStorage.getItem('userId'))
+    console.log(sessionStorage.getItem('userName'))
+    if (sessionStorage.getItem('userName')) {
+      this.$store.commit('loginFun', sessionStorage.getItem('userName'))
+      this.$store.commit('setUserId', sessionStorage.getItem('userId'))
     } else {
       this.$store.commit('logoutFun')
     }
