@@ -91,22 +91,39 @@
                 >
                   <el-card :body-style="{ padding: '5px' }">
                     <!-- <img :src='src' class="image" alt="" > -->
+
                     <el-image :src="photo.photoPath">
                     </el-image>
 
                     <div class="bottom clearfix">
-                      <div>{{photo.photoName}}</div>
-                      <time class="time">{{ photo.updateTime }}</time>
+                      <div class="photoname">{{photo.photoName}}</div>
+                      <time class="time">{{dateFormat(photo.updateTime) }}</time>
                       <!-- <el-button type="text" class="button" v-on:click="amplificate" >点击放大</el-button> -->
                     </div>
-                    <div class="text-center mt-12">
+
+                    <div
+                      class="text-center mt-12 deletebutton"
+                      width="5px"
+                      height="5px"
+                    >
+
                       <el-popconfirm
                         @confirm="deletePhoto(photo.photoID, i)"
                         title="Are you sure to delete this?"
                       >
-                        <el-button slot="reference">Delete</el-button>
+                        <!-- <div class="deletebutton"> -->
+                        <!-- <el-button slot="reference" >delete</i></el-button> -->
+                        <el-button
+                          slot="reference"
+                          size="5"
+                          type="danger"
+                          icon="el-icon-delete"
+                          circle
+                        ></el-button>
+                        <!-- </div> -->
                       </el-popconfirm>
                     </div>
+
                   </el-card>
                 </el-col>
               </el-row>
@@ -151,6 +168,29 @@
 .history-card {
   display: inline-flex;
 }
+
+.deletebutton {
+  /* margin-right:10px;
+	//float:right; */
+}
+
+.photoname {
+  /* padding-left:5px; */
+  font-style: "microsoft yahei";
+  text-align: center;
+  font-size: 14px;
+  padding-bottom: 10px;
+}
+
+.time {
+  display: block;
+  padding-bottom: 10px;
+
+  font-style: "microsoft yahei";
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+}
 </style>
 
 <script>
@@ -159,6 +199,9 @@ Array.remove = function (array, from, to) {
   array.length = from < 0 ? array.length + from : from;
   return array.push.apply(array, rest);
 };
+
+
+
 export default {
   data () {
     return {
@@ -174,6 +217,21 @@ export default {
         console.log("post")
         this.photos.remove(idx)
       })
+    },
+    //时间格式化函数，此处仅针对yyyy-MM-dd hh:mm:ss 的格式进行格式化
+    dateFormat (time) {
+      var date = new Date(time);
+      var year = date.getFullYear();
+      /* 在日期格式中，月份是从0开始的，因此要加0
+       * 使用三元表达式在小于10的前面加0，以达到格式统一  如 09:11:05
+       * */
+      var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+      var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+      var hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+      var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+      var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+      // 拼接
+      return year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
     }
     /* //放大图片
     amplificate () {
