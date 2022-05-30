@@ -1,7 +1,6 @@
 .DS_Store
 node_modules
 /dist
-frontend/public/img/photos
 # local env files
 .env.local
 .env.*.local
@@ -19,5 +18,7 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
+*.jpg
+*.png
 projectDocs/~$需求分析文档v3.docx
 frontend/src/views/Login_backp1.vue
