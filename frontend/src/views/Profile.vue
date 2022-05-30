@@ -61,7 +61,7 @@
                 </div>
               </div>
             </div>
-            <div class="text-center mt-6">
+            <div class="text-center mt-6 changeusername">
               <h3>{{$store.state.userName}}
                 <!-- <span class="font-weight-light">, 27</span> -->
               </h3>
@@ -82,17 +82,23 @@
             <span></span>
             <span></span>
             <span></span>
-            <div class="history-card">
+            <div class="history-card ">
               <el-row>
                 <el-col
                   :span="6"
                   v-for="(photo, i) in photos"
                   :key="i"
                 >
-                  <el-card :body-style="{ padding: '5px' }">
+                  <el-card
+                    :body-style="{ padding: '5px' }"
+                    shadow="hover"
+                  >
                     <!-- <img :src='src' class="image" alt="" > -->
 
-                    <el-image :src="photo.photoPath">
+                    <el-image
+                      :src="photo.photoPath"
+                      class="photostyle"
+                    >
                     </el-image>
 
                     <div class="bottom clearfix">
@@ -169,9 +175,16 @@
   display: inline-flex;
 }
 
+.changeusername {
+  margin-top: 30px;
+}
+
 .deletebutton {
   /* margin-right:10px;
 	//float:right; */
+}
+.photostyle :hover {
+  padding-top: 5px;
 }
 
 .photoname {
@@ -194,13 +207,21 @@
 </style>
 
 <script>
-Array.remove = function (array, from, to) {
+/* Array.remove = function (array, from, to) {
   var rest = array.slice((to || from) + 1 || array.length);
   array.length = from < 0 ? array.length + from : from;
   return array.push.apply(array, rest);
+}; */
+
+//arr:需要删除元素的数组 index:要删除元素的索引
+function delElByIndex (arr, index) {
+  var sliced = arr.slice(index + 1);//将需要删除元素后续的元素截取出来保存
+  arr.length = index;//将需要删除的元素以及后续的所有元素删除
+  console.log(sliced, arr);//sliced=>[4, 5] arr=>[0, 1, 2] 注意:这个时候参数index所对应的元素已经删除了
+  //arr.push(sliced);
+  arr.push.apply(arr, sliced);//将sliced中的元素复制回原数组arr中
+  console.log(sliced, arr);//sliced=>[4, 5] arr=>[0, 1, 2, 4, 5]
 };
-
-
 
 export default {
   data () {
@@ -214,8 +235,8 @@ export default {
     deletePhoto (photoID, idx) {
       console.log(photoID)
       this.$axios.post('/api/deletePhoto?photoID=' + photoID).then((res) => {
-        console.log("post")
-        this.photos.remove(idx)
+        console.log("post");
+        delElByIndex(this.photos, idx);
       })
     },
     //时间格式化函数，此处仅针对yyyy-MM-dd hh:mm:ss 的格式进行格式化

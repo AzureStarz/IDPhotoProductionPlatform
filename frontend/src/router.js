@@ -10,6 +10,7 @@ import Profile from "./views/Profile.vue";
 import CameraPage from "./views/CameraPage.vue";
 import Craft from "./views/Craft.vue";
 import DIYCraft from "./views/DIYCraft.vue";
+import retrievePassword from "./views/retrievePassword.vue"
 
 Vue.use(Router);
 
@@ -97,6 +98,18 @@ export default new Router({
       components: {
         header: AppHeader,
         default: Profile,
+        footer: AppFooter
+      }
+    },
+    {
+      path: "/retrievePassword",
+      name: "retrievePassword",
+      meta: {
+        requireAuth: false
+      },
+      components: {
+        header: AppHeader,
+        default: retrievePassword,
         footer: AppFooter
       }
     },

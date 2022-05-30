@@ -84,7 +84,7 @@
             <div class="col-6">
               <el-button
                 type="text"
-                @click="toRegister()"
+                @click="toForgetPWD()"
                 class="text-light"
               >
                 Forgot password?
@@ -117,6 +117,9 @@ export default {
   methods: {
     toRegister () {
       this.$router.push('/register');
+    },
+    toForgetPWD () {
+      this.$router.push('/retrievePassword');
     },
     login () {
       let loginUrl = '/api/login';
