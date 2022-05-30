@@ -42,8 +42,6 @@ CREATE TABLE `photo` (
 SET
   FOREIGN_KEY_CHECKS = 1;
 
-charset = UTF8;
-
 /*
  Navicat MySQL Data Transfer
  
