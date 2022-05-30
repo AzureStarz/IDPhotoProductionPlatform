@@ -83,7 +83,7 @@ public class Hello {
         StringBuilder result = new StringBuilder();
         HttpURLConnection conn = null;
         try{
-            URL url = new URL("https://openapi.mtlab.meitu.com/v3/makeup?api_key=e39297a28983493185cb529b2fdf70e0&api_secret=95a47f533cce48beb4e253d2028da4b2");
+            URL url = new URL("https://openapi.mtlab.meitu.com/v1/beauty?api_key=89f67c2b65374dc79eb311377335d71e&api_secret=b120fcf85ba8467b805fdd8fc46c2b5b");
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
 
@@ -96,6 +96,213 @@ public class Hello {
 
             out = new OutputStreamWriter(conn.getOutputStream());
             String jsonStr = "{\"parameter\":{\"beautyAlpha\":70},\"extra\":{},\"media_info_list\":[{\"media_data\":\""+ imgStr +"\",\"media_profiles\":{\"media_data_type\":\"jpg\"}}]}";
+            out.write(jsonStr);
+            out.flush();
+            out.close();
+
+            if (200 == conn.getResponseCode()){
+                in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+            }else{
+                System.out.println("ResponseCode is an error code:" + conn.getResponseCode());
+                in = new BufferedReader(new InputStreamReader(conn.getErrorStream(), "UTF-8"));
+            }
+            String line;
+            while ((line = in.readLine()) != null){
+                result.append(line);
+                System.out.println(line);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            try{
+                if(out != null){
+                    out.close();
+                }
+                if(in != null){
+                    in.close();
+                }
+            }catch (IOException ioe){
+                ioe.printStackTrace();
+            }
+        }
+        String newFilename = "beautify-"+ fileName;
+        String newPath = FileUtil.GetFrontEndPath(newFilename);
+        JsonObject obj = GsonUtils.fromJson(result.toString(), JsonObject.class);
+        JsonArray media_info_list = obj.getAsJsonArray("media_info_list");
+        JsonObject media_info = (JsonObject) media_info_list.get(0);
+        String base64NewImg = GsonUtils.toJson(media_info.get("media_data"));
+        Renew.GenerateImage(base64NewImg, newPath);
+        Photo newPhoto = new Photo();
+        newPhoto.setUserId(userId);
+        newPhoto.setPhotoPath(newPath);
+        newPhoto.setPhotoName(newFilename);
+        photoDao.savePhoto(newPhoto);
+        return newFilename;
+    }
+
+    @PostMapping("/api/makeup")
+    public String makeup(@RequestBody Map<String, String> params){
+        String imgStr = params.get("imgStr");
+        String fileName = params.get("fileName");
+        Integer userId = Integer.parseInt(params.get("userId"));
+
+
+        OutputStreamWriter out = null;
+        BufferedReader in = null;
+        StringBuilder result = new StringBuilder();
+        HttpURLConnection conn = null;
+        try{
+            URL url = new URL("https://openapi.mtlab.meitu.com/v3/makeup?api_key=89f67c2b65374dc79eb311377335d71e&api_secret=b120fcf85ba8467b805fdd8fc46c2b5b");
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+
+            conn.setConnectTimeout(30000);
+            conn.setReadTimeout(10000);
+            conn.setRequestProperty("Content-Type", "application/json");
+
+            out = new OutputStreamWriter(conn.getOutputStream());
+            String jsonStr = "{\"parameter\":{\"beautyAlpha\":70},\"extra\":{},\"media_info_list\":[{\"media_data\":\""+ imgStr +"\",\"media_profiles\":{\"media_data_type\":\"jpg\"}}]}";
+            out.write(jsonStr);
+            out.flush();
+            out.close();
+
+            if (200 == conn.getResponseCode()){
+                in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+            }else{
+                System.out.println("ResponseCode is an error code:" + conn.getResponseCode());
+                in = new BufferedReader(new InputStreamReader(conn.getErrorStream(), "UTF-8"));
+            }
+            String line;
+            while ((line = in.readLine()) != null){
+                result.append(line);
+                System.out.println(line);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            try{
+                if(out != null){
+                    out.close();
+                }
+                if(in != null){
+                    in.close();
+                }
+            }catch (IOException ioe){
+                ioe.printStackTrace();
+            }
+        }
+        String newFilename = "beautify-"+ fileName;
+        String newPath = FileUtil.GetFrontEndPath(newFilename);
+        JsonObject obj = GsonUtils.fromJson(result.toString(), JsonObject.class);
+        JsonArray media_info_list = obj.getAsJsonArray("media_info_list");
+        JsonObject media_info = (JsonObject) media_info_list.get(0);
+        String base64NewImg = GsonUtils.toJson(media_info.get("media_data"));
+        Renew.GenerateImage(base64NewImg, newPath);
+        Photo newPhoto = new Photo();
+        newPhoto.setUserId(userId);
+        newPhoto.setPhotoPath(newPath);
+        newPhoto.setPhotoName(newFilename);
+        photoDao.savePhoto(newPhoto);
+        return newFilename;
+    }
+
+    @PostMapping("/api/beauty_shape")
+    public String beauty_shape(@RequestBody Map<String, String> params){
+        String imgStr = params.get("imgStr");
+        String fileName = params.get("fileName");
+        Integer userId = Integer.parseInt(params.get("userId"));
+
+
+        OutputStreamWriter out = null;
+        BufferedReader in = null;
+        StringBuilder result = new StringBuilder();
+        HttpURLConnection conn = null;
+        try{
+            URL url = new URL("https://openapi.mtlab.meitu.com/v1/beauty_shape?api_key=89f67c2b65374dc79eb311377335d71e&api_secret=b120fcf85ba8467b805fdd8fc46c2b5b");
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+
+            conn.setConnectTimeout(30000);
+            conn.setReadTimeout(10000);
+            conn.setRequestProperty("Content-Type", "application/json");
+
+            out = new OutputStreamWriter(conn.getOutputStream());
+            String jsonStr = "{\"parameter\":{\"beautyAlpha\":70},\"extra\":{},\"media_info_list\":[{\"media_data\":\""+ imgStr +"\",\"media_profiles\":{\"media_data_type\":\"jpg\"}}]}";
+            out.write(jsonStr);
+            out.flush();
+            out.close();
+
+            if (200 == conn.getResponseCode()){
+                in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+            }else{
+                System.out.println("ResponseCode is an error code:" + conn.getResponseCode());
+                in = new BufferedReader(new InputStreamReader(conn.getErrorStream(), "UTF-8"));
+            }
+            String line;
+            while ((line = in.readLine()) != null){
+                result.append(line);
+                System.out.println(line);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            try{
+                if(out != null){
+                    out.close();
+                }
+                if(in != null){
+                    in.close();
+                }
+            }catch (IOException ioe){
+                ioe.printStackTrace();
+            }
+        }
+        String newFilename = "beautify-"+ fileName;
+        String newPath = FileUtil.GetFrontEndPath(newFilename);
+        JsonObject obj = GsonUtils.fromJson(result.toString(), JsonObject.class);
+        JsonArray media_info_list = obj.getAsJsonArray("media_info_list");
+        JsonObject media_info = (JsonObject) media_info_list.get(0);
+        String base64NewImg = GsonUtils.toJson(media_info.get("media_data"));
+        Renew.GenerateImage(base64NewImg, newPath);
+        Photo newPhoto = new Photo();
+        newPhoto.setUserId(userId);
+        newPhoto.setPhotoPath(newPath);
+        newPhoto.setPhotoName(newFilename);
+        photoDao.savePhoto(newPhoto);
+        return newFilename;
+    }
+
+    @PostMapping("/api/filter")
+    public String filter(@RequestBody Map<String, String> params){
+        String imgStr = params.get("imgStr");
+        String fileName = params.get("fileName");
+        Integer userId = Integer.parseInt(params.get("userId"));
+
+
+        OutputStreamWriter out = null;
+        BufferedReader in = null;
+        StringBuilder result = new StringBuilder();
+        HttpURLConnection conn = null;
+        try{
+            URL url = new URL("https://openapi.mtlab.meitu.com/v1/filter?api_key=89f67c2b65374dc79eb311377335d71e&api_secret=b120fcf85ba8467b805fdd8fc46c2b5b");
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+
+            conn.setConnectTimeout(30000);
+            conn.setReadTimeout(10000);
+            conn.setRequestProperty("Content-Type", "application/json");
+
+            out = new OutputStreamWriter(conn.getOutputStream());
+            String jsonStr = "{\"parameter\":{\"filterType\": \"Fa0145JwLfwjjbch\",\"filterAlpha\": 70,\"beautyAlpha\":70},\"extra\":{},\"media_info_list\":[{\"media_data\":\""+ imgStr +"\",\"media_profiles\":{\"media_data_type\":\"jpg\"}}]}";
             out.write(jsonStr);
             out.flush();
             out.close();
