@@ -30,73 +30,25 @@
         >
           <el-collapse-item
             class="ml-2"
-            title="证件类型"
-            name="1"
-          >
-            <el-radio-group v-model="radio">
-              <el-row>
-                <el-radio
-                  :label="1"
-                  border
-                >原尺寸</el-radio>
-                <el-radio
-                  :label="2"
-                  border
-                >小一寸</el-radio>
-              </el-row>
-              <el-row class="mt-2">
-                <el-radio
-                  :label="3"
-                  border
-                >一寸</el-radio>
-                <el-radio
-                  :label="4"
-                  border
-                >大一寸</el-radio>
-              </el-row>
-              <el-row class="mt-2">
-                <el-radio
-                  :label="5"
-                  border
-                >小二寸</el-radio>
-                <el-radio
-                  :label="6"
-                  border
-                >二寸</el-radio>
-              </el-row>
-              <el-row class="mt-2">
-                <el-radio
-                  :label="7"
-                  border
-                >大二寸</el-radio>
-              </el-row>
-            </el-radio-group>
-
-            <base-button
-              type="info"
-              icon="fa fa-plus-square-o"
-              @click="handleSizeSelection()"
-            >
-              确认选择
-            </base-button>
-          </el-collapse-item>
-          <el-collapse-item
-            class="ml-2"
             title="换背景"
             name="2"
           >
             <el-row>
-              <p style="margin-top:20px; margin-bottom:5px; font-weight: bold">选择背景颜色</p>
-              <el-color-picker
-                class="color-picker"
-                v-model="bgcolor"
-                circle
-                size="large"
-                show-alpha
-                :predefine="predefineColors"
-                @change="changeBgColor"
-                color-format="hex"
-              ></el-color-picker>
+              <p style="font-weight: bold">请上传所需要的背景图片</p>
+              <base-button
+                type="success"
+                @click="uploadButton2"
+                icon="fa fa-plus-square-o"
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  style="display:none"
+                  id="uploadbackground"
+                  @change="uploadBackground"
+                />
+                上传背景
+              </base-button>
             </el-row>
           </el-collapse-item>
           <el-collapse-item
@@ -106,9 +58,27 @@
           >
             <el-popconfirm
               @confirm="beautify()"
-              title="您确定要美颜吗?有些证件照是不允许美颜的喔~"
+              title="您需要美颜处理吗~"
             >
               <el-button slot="reference">人像美颜</el-button>
+            </el-popconfirm>
+            <el-popconfirm
+              @confirm="makeup()"
+              title="您需要美妆处理吗~"
+            >
+              <el-button slot="reference">人像美妆</el-button>
+            </el-popconfirm>
+            <el-popconfirm
+              @confirm="beauty_shape()"
+              title="您需要人像美型吗~"
+            >
+              <el-button slot="reference">人像美型</el-button>
+            </el-popconfirm>
+            <el-popconfirm
+              @confirm="filter()"
+              title="您需要滤镜风格变换吗~"
+            >
+              <el-button slot="reference">滤镜风格变换</el-button>
             </el-popconfirm>
           </el-collapse-item>
         </el-collapse>
@@ -160,6 +130,8 @@ let targetFileName = "";
 let targetOriginImg = "";
 let currentImg = null;
 let segImg = "";
+let diyImg = null;
+let diyBackground = null;
 fabric.Object.prototype.set({
   cornerStrokeColor: "#66b0ef",
   cornerColor: "#60abec",
@@ -321,9 +293,9 @@ export default {
       // TODO: 这里利用传进来的参数替换“一寸”
       // 根据不同证件照要求创建框框
       // 创建一个矩形对象
-      size = this.acquireSize("一寸")
+      /* size = this.acquireSize("一寸")
       rect = this.drawRect(size)
-      editorCanvas.add(rect);
+      editorCanvas.add(rect); */
       if (this.$route.params.img != undefined) {
         currentImg = this.$route.params.img;
         /* let uploadImageUrl = this.$route.params.imgUrl */
@@ -351,6 +323,10 @@ export default {
     // 载入图片
     imgDraw () {
       document.getElementById("uploadfile").click();
+    },
+    // 载入图片
+    uploadButton2 () {
+      document.getElementById("uploadbackground").click();
     },
     uploadFile (e) {
       editorCanvas.isDrawingMode = false;
@@ -388,7 +364,7 @@ export default {
             currentImg.scaleX = 0.3;
             currentImg.scaleY = 0.3;
             editorCanvas.add(currentImg).renderAll();
-            this.handleSizeSelection();
+            // this.handleSizeSelection();
             this.fullscreenLoading = false;
           });
         }).catch(error => {
@@ -399,18 +375,38 @@ export default {
       e.target.value = "";
     },
 
+    uploadBackground (e) {
+      editorCanvas.isDrawingMode = false;
+      let file = e.target.files[0];
+      console.log(file);
+      let reader = new FileReader();
+      reader.onload = (e) => {
+        this.fullscreenLoading = true;
+        // TODO: 这个地方读取到的也是BASE64图片 需要传到后端 然后后端返回一个url地址
+        let data = e.target.result;
+        fabric.Image.fromURL(data, (img) => {
+          // 封装成了fabric格式的图片
+          console.log(img);
+          diyBackground = img;
+          editorCanvas.add(diyBackground).renderAll();
+          editorCanvas.bringToFront(currentImg);
+          this.fullscreenLoading = false;
+        });
+      };
+      reader.readAsDataURL(file);
+      e.target.value = "";
+    },
+
     // 下载图片
     downLoad () {
       this.done = true;
       const dataURL = editorCanvas.toDataURL({
-        width: size.width,
-        height: size.height,
-        left: editorCanvas.getCenter().left - size.width / 2,
-        top: editorCanvas.getCenter().top - size.height / 2,
+        width: editorCanvas.width,
+        height: editorCanvas.height,
         format: "png",
       });
       const link = document.createElement("a");
-      link.download = "图片.png";
+      link.download = "个性图片.png";
       link.href = dataURL;
       document.body.appendChild(link);
       link.click();
@@ -617,6 +613,270 @@ export default {
           let params = {
             imgStr: segImg,
             fileName: paramFileName[0] + '_plus_beautify.jpg',
+            userId: userId
+          }
+          this.$axios.post(segURL, params).then(res => {
+            let imgUrl = 'img\\photos\\';
+            imgUrl += res.data;
+            console.log(imgUrl)
+            fabric.Image.fromURL(imgUrl, (img) => {
+              // 封装成了fabric格式的图片
+              console.log(img);
+              editorCanvas.remove(currentImg)
+              currentImg = img
+              originalSize = { height: currentImg.height, width: currentImg.width };
+              currentImg.top = 0;
+              currentImg.left = 0;
+              currentImg.scaleX = 0.3;
+              currentImg.scaleY = 0.3;
+              /* this.handleSizeSelection(); */
+              editorCanvas.add(currentImg).renderAll();
+              this.fullscreenLoading = false;
+            });
+          }).catch(error => {
+            console.log(error.message);
+          })
+        }, 1500);
+
+
+
+        /* fabric.Image.fromURL(imgUrl, (img) => {
+          // 封装成了fabric格式的图片
+          console.log(img);
+          originalSize = { height: img.height, width: img.width };
+          img.top = 0;
+          img.left = 0;
+          img.scaleX = 0.3;
+          img.scaleY = 0.3;
+          editorCanvas.add(img).renderAll();
+          this.handleSizeSelection();
+          this.fullscreenLoading = false;
+        }); */
+      }).catch(error => {
+        console.log(error.message);
+      })
+    },
+
+    /**
+     * @param imgStr base64图片格式
+     * @param fileName 文件名
+     * @param userId 登陆用户的ID
+     */
+    makeup () {
+      console.log(targetOriginImg)
+      this.fullscreenLoading = true;
+      let userId = this.$store.state.userId
+      let makeupURL = '/api/makeup';
+      let paramFileName = targetFileName.split(".");
+      let params = {
+        imgStr: targetOriginImg,
+        fileName: paramFileName[0] + '_makeup.jpg',
+        userId: userId
+      }
+      this.$axios.post(makeupURL, params).then(res => {
+        let imgUrl = 'img\\photos\\';
+        imgUrl += res.data;
+        console.log(imgUrl)
+
+        /* let ext = imgUrl.substring(imgUrl.lastIndexOf(".") + 1, imgUrl.length)
+        console.log(ext)
+        this.getUrlBase64(imgUrl, ext, function (base64) {
+          segImg = base64 // base64.replace(/^data:image\/\w+;base64,/, "");
+          segImg = segImg.replace(/^data:image\/\w+;base64,/, "");
+        }); */
+        this.urlToBlob(imgUrl, function (img_blob) {
+          var reader = new FileReader();
+          reader.readAsDataURL(img_blob);    // 解析成base64格式
+          reader.onload = function () {
+            console.log(this.result);        // 解析后的数据，如下图
+            segImg = this.result
+            segImg = segImg.replace(/^data:image\/\w+;base64,/, "");
+          }
+        });
+
+        setTimeout(() => {
+          console.log(segImg)
+          let segURL = '/api/seg';
+          let paramFileName = targetFileName.split(".");
+          let params = {
+            imgStr: segImg,
+            fileName: paramFileName[0] + '_plus_makeup.jpg',
+            userId: userId
+          }
+          this.$axios.post(segURL, params).then(res => {
+            let imgUrl = 'img\\photos\\';
+            imgUrl += res.data;
+            console.log(imgUrl)
+            fabric.Image.fromURL(imgUrl, (img) => {
+              // 封装成了fabric格式的图片
+              console.log(img);
+              editorCanvas.remove(currentImg)
+              currentImg = img
+              originalSize = { height: currentImg.height, width: currentImg.width };
+              currentImg.top = 0;
+              currentImg.left = 0;
+              currentImg.scaleX = 0.3;
+              currentImg.scaleY = 0.3;
+              this.handleSizeSelection();
+              editorCanvas.add(currentImg).renderAll();
+              this.fullscreenLoading = false;
+            });
+          }).catch(error => {
+            console.log(error.message);
+          })
+        }, 1000);
+
+
+
+        /* fabric.Image.fromURL(imgUrl, (img) => {
+          // 封装成了fabric格式的图片
+          console.log(img);
+          originalSize = { height: img.height, width: img.width };
+          img.top = 0;
+          img.left = 0;
+          img.scaleX = 0.3;
+          img.scaleY = 0.3;
+          editorCanvas.add(img).renderAll();
+          this.handleSizeSelection();
+          this.fullscreenLoading = false;
+        }); */
+      }).catch(error => {
+        console.log(error.message);
+      })
+    },
+
+    /**
+     * @param imgStr base64图片格式
+     * @param fileName 文件名
+     * @param userId 登陆用户的ID
+     */
+    beauty_shape () {
+      console.log(targetOriginImg)
+      this.fullscreenLoading = true;
+      let userId = this.$store.state.userId
+      let beauty_shapeURL = '/api/beauty_shape';
+      let paramFileName = targetFileName.split(".");
+      let params = {
+        imgStr: targetOriginImg,
+        fileName: paramFileName[0] + '_beauty_shape.jpg',
+        userId: userId
+      }
+      this.$axios.post(beauty_shapeURL, params).then(res => {
+        let imgUrl = 'img\\photos\\';
+        imgUrl += res.data;
+        console.log(imgUrl)
+
+        /* let ext = imgUrl.substring(imgUrl.lastIndexOf(".") + 1, imgUrl.length)
+        console.log(ext)
+        this.getUrlBase64(imgUrl, ext, function (base64) {
+          segImg = base64 // base64.replace(/^data:image\/\w+;base64,/, "");
+          segImg = segImg.replace(/^data:image\/\w+;base64,/, "");
+        }); */
+        this.urlToBlob(imgUrl, function (img_blob) {
+          var reader = new FileReader();
+          reader.readAsDataURL(img_blob);    // 解析成base64格式
+          reader.onload = function () {
+            console.log(this.result);        // 解析后的数据，如下图
+            segImg = this.result
+            segImg = segImg.replace(/^data:image\/\w+;base64,/, "");
+          }
+        });
+
+        setTimeout(() => {
+          console.log(segImg)
+          let segURL = '/api/seg';
+          let paramFileName = targetFileName.split(".");
+          let params = {
+            imgStr: segImg,
+            fileName: paramFileName[0] + '_plus_beauty_shape.jpg',
+            userId: userId
+          }
+          this.$axios.post(segURL, params).then(res => {
+            let imgUrl = 'img\\photos\\';
+            imgUrl += res.data;
+            console.log(imgUrl)
+            fabric.Image.fromURL(imgUrl, (img) => {
+              // 封装成了fabric格式的图片
+              console.log(img);
+              editorCanvas.remove(currentImg)
+              currentImg = img
+              originalSize = { height: currentImg.height, width: currentImg.width };
+              currentImg.top = 0;
+              currentImg.left = 0;
+              currentImg.scaleX = 0.3;
+              currentImg.scaleY = 0.3;
+              this.handleSizeSelection();
+              editorCanvas.add(currentImg).renderAll();
+              this.fullscreenLoading = false;
+            });
+          }).catch(error => {
+            console.log(error.message);
+          })
+        }, 1000);
+
+
+
+        /* fabric.Image.fromURL(imgUrl, (img) => {
+          // 封装成了fabric格式的图片
+          console.log(img);
+          originalSize = { height: img.height, width: img.width };
+          img.top = 0;
+          img.left = 0;
+          img.scaleX = 0.3;
+          img.scaleY = 0.3;
+          editorCanvas.add(img).renderAll();
+          this.handleSizeSelection();
+          this.fullscreenLoading = false;
+        }); */
+      }).catch(error => {
+        console.log(error.message);
+      })
+    },
+
+    /**
+     * @param imgStr base64图片格式
+     * @param fileName 文件名
+     * @param userId 登陆用户的ID
+     */
+    filter () {
+      console.log(targetOriginImg)
+      this.fullscreenLoading = true;
+      let userId = this.$store.state.userId
+      let filterURL = '/api/filter';
+      let paramFileName = targetFileName.split(".");
+      let params = {
+        imgStr: targetOriginImg,
+        fileName: paramFileName[0] + '_filter.jpg',
+        userId: userId
+      }
+      this.$axios.post(filterURL, params).then(res => {
+        let imgUrl = 'img\\photos\\';
+        imgUrl += res.data;
+        console.log(imgUrl)
+
+        /* let ext = imgUrl.substring(imgUrl.lastIndexOf(".") + 1, imgUrl.length)
+        console.log(ext)
+        this.getUrlBase64(imgUrl, ext, function (base64) {
+          segImg = base64 // base64.replace(/^data:image\/\w+;base64,/, "");
+          segImg = segImg.replace(/^data:image\/\w+;base64,/, "");
+        }); */
+        this.urlToBlob(imgUrl, function (img_blob) {
+          var reader = new FileReader();
+          reader.readAsDataURL(img_blob);    // 解析成base64格式
+          reader.onload = function () {
+            console.log(this.result);        // 解析后的数据，如下图
+            segImg = this.result
+            segImg = segImg.replace(/^data:image\/\w+;base64,/, "");
+          }
+        });
+
+        setTimeout(() => {
+          console.log(segImg)
+          let segURL = '/api/seg';
+          let paramFileName = targetFileName.split(".");
+          let params = {
+            imgStr: segImg,
+            fileName: paramFileName[0] + '_plus_filter.jpg',
             userId: userId
           }
           this.$axios.post(segURL, params).then(res => {

@@ -8,7 +8,7 @@
   </section>
 </template>
 <script>
-import DIYCanvas from "./components/DIYCanvas.vue"
+import DIYCanvas from "./components/NewDIYCanvas.vue"
 export default {
   name: "diycraft",
   components: {
