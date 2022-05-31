@@ -61,12 +61,11 @@
           <div class="col-sm-4 mt-4 mt-sm-0 text-right">
             <span class="text-white alpha-7">Coded by</span>
             <a
-              href="https://www.creative-tim.com"
               target="_blank"
               title="Creative Tim - Premium Bootstrap Themes and Templates"
             >
               <img
-                src="img/brand/creativetim-white-slim.png"
+                src="img/brand/AzureStar.jpg"
                 class="ml-3"
                 style="height: 30px;"
               >

@@ -358,47 +358,79 @@ export default {
       let file = e.target.files[0];
       console.log(file);
       let reader = new FileReader();
+      let flag = true;
       reader.onload = (e) => {
         this.fullscreenLoading = true;
-        // TODO: 这个地方读取到的也是BASE64图片 需要传到后端 然后后端返回一个url地址
         let data = e.target.result;
-        // 保证原图片能够正常存储下来
-        var imgs = data.replace(/^data:image\/\w+;base64,/, "");
-        targetOriginImg = imgs
-        let fileName = file.name;
-        targetFileName = fileName
-        let userId = this.$store.state.userId
-        let segURL = '/api/seg';
-        let params = {
-          imgStr: imgs,
-          fileName: fileName,
-          userId: userId
+        /* this.getWH(data); */
+        // 通过长高来判断是否超出限制
+        const that = this;
+        var img = new Image();
+        img.src = data;
+        img.onload = function () {
+          //图片尺寸
+          console.log(img.width, img.height);
+          if (img.width > 4096 || img.height > 4096) {
+            that.fullscreenLoading = false;
+            that.$notify({
+              title: '警告⚠',
+              message: '输入的图片太大了，请选择小一点的图片',
+              type: 'warning'
+            });
+            flag = false;
+          }
         }
-        this.$axios.post(segURL, params).then(res => {
-          let imgUrl = 'img\\photos\\';
-          imgUrl += res.data;
-          console.log(imgUrl)
-          fabric.Image.fromURL(imgUrl, (img) => {
-            // 封装成了fabric格式的图片
-            console.log(img);
-            /* editorCanvas.remove(currentImg) */
-            this.resetCanvas()
-            currentImg = img
-            originalSize = { height: currentImg.height, width: currentImg.width };
-            currentImg.top = 0;
-            currentImg.left = 0;
-            currentImg.scaleX = 0.4;
-            currentImg.scaleY = 0.4;
-            this.handleSizeSelection();
-            editorCanvas.add(currentImg).renderAll();
-            this.fullscreenLoading = false;
-          });
-        }).catch(error => {
-          console.log(error.message);
-        })
+        setTimeout(() => {
+          if (flag) {
+            // 保证原图片能够正常存储下来
+            var imgs = data.replace(/^data:image\/\w+;base64,/, "");
+            targetOriginImg = imgs
+            let fileName = file.name;
+            targetFileName = fileName
+            let userId = this.$store.state.userId
+            let segURL = '/api/seg';
+            let params = {
+              imgStr: imgs,
+              fileName: fileName,
+              userId: userId
+            }
+            this.$axios.post(segURL, params).then(res => {
+              let imgUrl = 'img\\photos\\';
+              imgUrl += res.data;
+              console.log(imgUrl)
+              fabric.Image.fromURL(imgUrl, (img) => {
+                // 封装成了fabric格式的图片
+                console.log(img);
+                /* editorCanvas.remove(currentImg) */
+                this.resetCanvas()
+                currentImg = img
+                originalSize = { height: currentImg.height, width: currentImg.width };
+                currentImg.top = 0;
+                currentImg.left = 0;
+                currentImg.scaleX = 0.4;
+                currentImg.scaleY = 0.4;
+                this.handleSizeSelection();
+                editorCanvas.add(currentImg).renderAll();
+                this.fullscreenLoading = false;
+              });
+            }).catch(error => {
+              console.log(error.message);
+            })
+          }
+        }, 150)
       };
       reader.readAsDataURL(file);
       e.target.value = "";
+    },
+
+    // 获取图片的长宽
+    getWH (base64) {
+      var img = new Image();
+      img.src = base64;
+      img.onload = function () {
+        //图片尺寸
+        console.log(img.width, img.height);
+      }
     },
 
     // 下载图片
@@ -650,8 +682,8 @@ export default {
               originalSize = { height: currentImg.height, width: currentImg.width };
               currentImg.top = 0;
               currentImg.left = 0;
-              currentImg.scaleX = 0.3;
-              currentImg.scaleY = 0.3;
+              currentImg.scaleX = 0.4;
+              currentImg.scaleY = 0.4;
               this.handleSizeSelection();
               editorCanvas.add(currentImg).renderAll();
               this.fullscreenLoading = false;
@@ -659,7 +691,7 @@ export default {
           }).catch(error => {
             console.log(error.message);
           })
-        }, 1000);
+        }, 1500);
 
 
 
