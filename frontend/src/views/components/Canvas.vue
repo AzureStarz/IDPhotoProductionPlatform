@@ -411,9 +411,23 @@ export default {
         top: editorCanvas.getCenter().top - size.height / 2,
         format: "png",
       });
+      // 新生成照片的base64格式
       console.log(dataURL);
+      let savedImg = dataURL.replace(/^data:image\/\w+;base64,/, "");
+      let userId = this.$store.state.userId;
+      let saveUrl = "/api/save";
+      let paramFileName = targetFileName.split(".");
+      let downloadName = paramFileName[0] + '_crafted.png';
+      let params = {
+        imgStr: savedImg,
+        fileName: downloadName,
+        userId: userId
+      }
+      this.$axios.post(saveUrl, params).then(res => {
+        console.log("saved successfully");
+      })
       const link = document.createElement("a");
-      link.download = "图片.png";
+      link.download = downloadName;
       link.href = dataURL;
       document.body.appendChild(link);
       link.click();
