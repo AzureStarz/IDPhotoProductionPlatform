@@ -388,7 +388,8 @@ export default {
           fabric.Image.fromURL(imgUrl, (img) => {
             // 封装成了fabric格式的图片
             console.log(img);
-            editorCanvas.remove(currentImg)
+            this.resetCanvas();
+            /* editorCanvas.remove(currentImg) */
             currentImg = img
             originalSize = { height: currentImg.height, width: currentImg.width };
             currentImg.top = 0;
@@ -532,7 +533,11 @@ export default {
       }
       rect = null;
       size = null;
+      currentImg = null;
+      diyImg = null;
       originalSize = null;
+      diyBackground = null;
+      targetFileName = "";
       editorCanvas.setBackgroundColor("#fff");
     },
 
@@ -684,7 +689,8 @@ export default {
             fabric.Image.fromURL(imgUrl, (img) => {
               // 封装成了fabric格式的图片
               console.log(img);
-              editorCanvas.remove(currentImg)
+              this.resetCanvas();
+              /* editorCanvas.remove(currentImg) */
               currentImg = img
               originalSize = { height: currentImg.height, width: currentImg.width };
               currentImg.top = 0;
@@ -772,7 +778,8 @@ export default {
             fabric.Image.fromURL(imgUrl, (img) => {
               // 封装成了fabric格式的图片
               console.log(img);
-              editorCanvas.remove(currentImg)
+              this.resetCanvas();
+              /* editorCanvas.remove(currentImg) */
               currentImg = img
               originalSize = { height: currentImg.height, width: currentImg.width };
               currentImg.top = 0;
@@ -828,7 +835,7 @@ export default {
         imgUrl += res.data;
         console.log(imgUrl)
 
-        /* let ext = imgUrl.substring(imgUrl.lastIndexOf(".") + 1, imgUrl.length)
+        /* let ext = imgUrl.substring(imgUrl.lastIndexOf(".") + 1, imgUrl.length)resultr
         console.log(ext)
         this.getUrlBase64(imgUrl, ext, function (base64) {
           segImg = base64 // base64.replace(/^data:image\/\w+;base64,/, "");
@@ -860,7 +867,8 @@ export default {
             fabric.Image.fromURL(imgUrl, (img) => {
               // 封装成了fabric格式的图片
               console.log(img);
-              editorCanvas.remove(currentImg)
+              this.resetCanvas();
+              /* editorCanvas.remove(currentImg) */
               currentImg = img
               originalSize = { height: currentImg.height, width: currentImg.width };
               currentImg.top = 0;
@@ -908,7 +916,7 @@ export default {
       let paramFileName = targetFileName.split(".");
       let params = {
         imgStr: targetOriginImg,
-        fileName: paramFileName[0] + '_filter.jpg',
+        fileName: paramFileName[0] + '_' + this.radio + '_filter.jpg',
         userId: userId,
         filter_id: this.radio
       }
@@ -939,7 +947,7 @@ export default {
           let paramFileName = targetFileName.split(".");
           let params = {
             imgStr: segImg,
-            fileName: paramFileName[0] + '_plus_filter.jpg',
+            fileName: paramFileName[0] + '_' + this.radio + '_plus_filter.jpg',
             userId: userId
           }
           this.$axios.post(segURL, params).then(res => {
@@ -949,7 +957,8 @@ export default {
             fabric.Image.fromURL(imgUrl, (img) => {
               // 封装成了fabric格式的图片
               console.log(img);
-              editorCanvas.remove(currentImg)
+              this.resetCanvas();
+              /* editorCanvas.remove(currentImg) */
               currentImg = img
               originalSize = { height: currentImg.height, width: currentImg.width };
               currentImg.top = 0;
