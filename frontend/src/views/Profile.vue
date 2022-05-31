@@ -24,7 +24,7 @@
                 <div class="card-profile-image">
                   <a href="#">
                     <img
-                      v-lazy="'img/theme/team-4-800x800.jpg'"
+                      v-lazy="'https://pic2.zhimg.com/v2-512df85276b7f4367135c6bdb0e85a35_r.jpg'"
                       class="rounded-circle"
                     >
                   </a>
@@ -183,7 +183,7 @@
   /* margin-right:10px;
 	//float:right; */
 }
-.photostyle :hover {
+.photostyle {
   padding-top: 5px;
 }
 

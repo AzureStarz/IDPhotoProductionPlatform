@@ -194,7 +194,7 @@ public class Hello {
                 ioe.printStackTrace();
             }
         }
-        String newFilename = "beautify-"+ fileName;
+        String newFilename = "makeup-"+ fileName;
         String newPath = FileUtil.GetFrontEndPath(newFilename);
         JsonObject obj = GsonUtils.fromJson(result.toString(), JsonObject.class);
         JsonArray media_info_list = obj.getAsJsonArray("media_info_list");
@@ -263,7 +263,7 @@ public class Hello {
                 ioe.printStackTrace();
             }
         }
-        String newFilename = "beautify-"+ fileName;
+        String newFilename = "beauty_shape-"+ fileName;
         String newPath = FileUtil.GetFrontEndPath(newFilename);
         JsonObject obj = GsonUtils.fromJson(result.toString(), JsonObject.class);
         JsonArray media_info_list = obj.getAsJsonArray("media_info_list");
@@ -332,7 +332,7 @@ public class Hello {
                 ioe.printStackTrace();
             }
         }
-        String newFilename = "beautify-"+ fileName;
+        String newFilename = "filter-"+ fileName;
         String newPath = FileUtil.GetFrontEndPath(newFilename);
         JsonObject obj = GsonUtils.fromJson(result.toString(), JsonObject.class);
         JsonArray media_info_list = obj.getAsJsonArray("media_info_list");

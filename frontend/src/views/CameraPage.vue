@@ -55,7 +55,7 @@
         <el-row class="mt-3 row justify-content-center">
           <el-button
             @click="postImg()"
-            type="info"
+            type="primary"
             v-loading.fullscreen.lock="fullscreenLoading"
           >确认上传</el-button>
         </el-row>

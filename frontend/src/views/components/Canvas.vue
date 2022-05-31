@@ -239,6 +239,7 @@ export default {
       rect = this.drawRect(size);
       console.log(rect);
       editorCanvas.add(rect);
+      editorCanvas.bringToFront(currentImg);
     },
     handleChange (val) {
       console.log(val);
@@ -341,8 +342,8 @@ export default {
         originalSize = { height: currentImg.height, width: currentImg.width };
         currentImg.top = 0;
         currentImg.left = 0;
-        currentImg.scaleX = 0.3;
-        currentImg.scaleY = 0.3;
+        currentImg.scaleX = 0.4;
+        currentImg.scaleY = 0.4;
         editorCanvas.add(currentImg);
       }
       // editorCanvas.remove(rect);
@@ -353,7 +354,7 @@ export default {
       document.getElementById("uploadfile").click();
     },
     uploadFile (e) {
-      editorCanvas.isDrawingMode = false;
+      /* editorCanvas.isDrawingMode = false; */
       let file = e.target.files[0];
       console.log(file);
       let reader = new FileReader();
@@ -380,15 +381,16 @@ export default {
           fabric.Image.fromURL(imgUrl, (img) => {
             // 封装成了fabric格式的图片
             console.log(img);
-            editorCanvas.remove(currentImg)
+            /* editorCanvas.remove(currentImg) */
+            this.resetCanvas()
             currentImg = img
             originalSize = { height: currentImg.height, width: currentImg.width };
             currentImg.top = 0;
             currentImg.left = 0;
-            currentImg.scaleX = 0.3;
-            currentImg.scaleY = 0.3;
-            editorCanvas.add(currentImg).renderAll();
+            currentImg.scaleX = 0.4;
+            currentImg.scaleY = 0.4;
             this.handleSizeSelection();
+            editorCanvas.add(currentImg).renderAll();
             this.fullscreenLoading = false;
           });
         }).catch(error => {
@@ -409,6 +411,7 @@ export default {
         top: editorCanvas.getCenter().top - size.height / 2,
         format: "png",
       });
+      console.log(dataURL);
       const link = document.createElement("a");
       link.download = "图片.png";
       link.href = dataURL;
@@ -475,6 +478,7 @@ export default {
       rect = null;
       size = null;
       originalSize = null;
+      currentImg = null;
       editorCanvas.setBackgroundColor("#fff");
     },
 
@@ -626,7 +630,8 @@ export default {
             fabric.Image.fromURL(imgUrl, (img) => {
               // 封装成了fabric格式的图片
               console.log(img);
-              editorCanvas.remove(currentImg)
+              /* editorCanvas.remove(currentImg) */
+              this.resetCanvas()
               currentImg = img
               originalSize = { height: currentImg.height, width: currentImg.width };
               currentImg.top = 0;
