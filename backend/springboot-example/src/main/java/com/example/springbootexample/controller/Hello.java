@@ -18,6 +18,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +26,15 @@ import java.util.Map;
 public class Hello {
     @Autowired(required=false)
     private PhotoDao photoDao;
+    private static final Map<Integer, String> filters = new HashMap<Integer, String>();
+    static{
+        filters.put(1, "Fa0145JwLfwjjbch");
+        filters.put(2, "Fa0415o4g8OfwAw8");
+        filters.put(3, "Fa0436P7QKK0zKRL");
+        filters.put(4, "Fa0108HAz4MlDLVx");
+        filters.put(5, "Fa0535samdIjz0Wq");
+        filters.put(6, "Fa0727hdRPZAndOR");
+    }
     @PostMapping("/api/seg")
     public String segment(@RequestBody Map<String, String> params){
         String imgStr = params.get("imgStr");
@@ -296,8 +306,8 @@ public class Hello {
         String imgStr = params.get("imgStr");
         String fileName = params.get("fileName");
         Integer userId = Integer.parseInt(params.get("userId"));
-
-
+        Integer filter_id = Integer.parseInt(params.get("filter_id"));
+        String filter_str = filters.get(filter_id);
         OutputStreamWriter out = null;
         BufferedReader in = null;
         StringBuilder result = new StringBuilder();
@@ -315,7 +325,7 @@ public class Hello {
             conn.setRequestProperty("Content-Type", "application/json");
 
             out = new OutputStreamWriter(conn.getOutputStream());
-            String jsonStr = "{\"parameter\":{\"filterType\": \"Fa0145JwLfwjjbch\",\"filterAlpha\": 70,\"beautyAlpha\":70},\"extra\":{},\"media_info_list\":[{\"media_data\":\""+ imgStr +"\",\"media_profiles\":{\"media_data_type\":\"jpg\"}}]}";
+            String jsonStr = "{\"parameter\":{\"filterType\": \"" + filter_str + "\",\"filterAlpha\": 70,\"beautyAlpha\":70},\"extra\":{},\"media_info_list\":[{\"media_data\":\""+ imgStr +"\",\"media_profiles\":{\"media_data_type\":\"jpg\"}}]}";
             out.write(jsonStr);
             out.flush();
             out.close();

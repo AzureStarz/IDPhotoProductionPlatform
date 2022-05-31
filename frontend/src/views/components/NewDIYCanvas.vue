@@ -74,12 +74,44 @@
             >
               <el-button slot="reference">人像美型</el-button>
             </el-popconfirm>
+          </el-collapse-item>
+          <el-collapse-item
+            class="ml-2"
+            title="图像风格迁移"
+            name="4"
+          >
+            <el-radio
+              v-model="radio"
+              label="1"
+            >彩铅</el-radio>
+            <el-radio
+              v-model="radio"
+              label="2"
+            >Hana</el-radio>
+            <el-radio
+              v-model="radio"
+              label="3"
+            >中央公园</el-radio>
+            <el-radio
+              v-model="radio"
+              label="4"
+            >优格</el-radio>
+            <el-radio
+              v-model="radio"
+              label="5"
+            >兰桂坊</el-radio>
+            <el-radio
+              v-model="radio"
+              label="6"
+            >粉镜</el-radio>
             <el-popconfirm
+              class="mr-4"
               @confirm="filter()"
               title="您需要滤镜风格变换吗~"
             >
               <el-button slot="reference">滤镜风格变换</el-button>
             </el-popconfirm>
+
           </el-collapse-item>
         </el-collapse>
         <el-row>
@@ -147,7 +179,7 @@ export default {
   data () {
     return {
       fullscreenLoading: false,
-      radio: '2',
+      radio: '1',
       activeNames: ['2'],
       isHide: true,
       checkAll: false,
@@ -398,7 +430,7 @@ export default {
     },
 
     // 下载图片
-    downLoad () {
+    /* downLoad () {
       this.done = true;
       const dataURL = editorCanvas.toDataURL({
         width: editorCanvas.width,
@@ -407,6 +439,36 @@ export default {
       });
       const link = document.createElement("a");
       link.download = "个性图片.png";
+      link.href = dataURL;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }, */
+
+    downLoad () {
+      this.done = true;
+      const dataURL = editorCanvas.toDataURL({
+        width: editorCanvas.width,
+        height: editorCanvas.height,
+        format: "png",
+      });
+      // 新生成照片的base64格式
+      console.log(dataURL);
+      let savedImg = dataURL.replace(/^data:image\/\w+;base64,/, "");
+      let userId = this.$store.state.userId;
+      let saveUrl = "/api/save";
+      let paramFileName = targetFileName.split(".");
+      let downloadName = paramFileName[0] + '_个性化照片.png';
+      let params = {
+        imgStr: savedImg,
+        fileName: downloadName,
+        userId: userId
+      }
+      this.$axios.post(saveUrl, params).then(res => {
+        console.log("saved successfully");
+      })
+      const link = document.createElement("a");
+      link.download = downloadName;
       link.href = dataURL;
       document.body.appendChild(link);
       link.click();
@@ -717,14 +779,14 @@ export default {
               currentImg.left = 0;
               currentImg.scaleX = 0.3;
               currentImg.scaleY = 0.3;
-              this.handleSizeSelection();
+              /* this.handleSizeSelection(); */
               editorCanvas.add(currentImg).renderAll();
               this.fullscreenLoading = false;
             });
           }).catch(error => {
             console.log(error.message);
           })
-        }, 1000);
+        }, 1500);
 
 
 
@@ -805,14 +867,14 @@ export default {
               currentImg.left = 0;
               currentImg.scaleX = 0.3;
               currentImg.scaleY = 0.3;
-              this.handleSizeSelection();
+              /* this.handleSizeSelection(); */
               editorCanvas.add(currentImg).renderAll();
               this.fullscreenLoading = false;
             });
           }).catch(error => {
             console.log(error.message);
           })
-        }, 1000);
+        }, 1500);
 
 
 
@@ -847,7 +909,8 @@ export default {
       let params = {
         imgStr: targetOriginImg,
         fileName: paramFileName[0] + '_filter.jpg',
-        userId: userId
+        userId: userId,
+        filter_id: this.radio
       }
       this.$axios.post(filterURL, params).then(res => {
         let imgUrl = 'img\\photos\\';
@@ -893,14 +956,14 @@ export default {
               currentImg.left = 0;
               currentImg.scaleX = 0.3;
               currentImg.scaleY = 0.3;
-              this.handleSizeSelection();
+              /* this.handleSizeSelection(); */
               editorCanvas.add(currentImg).renderAll();
               this.fullscreenLoading = false;
             });
           }).catch(error => {
             console.log(error.message);
           })
-        }, 1000);
+        }, 1500);
 
 
 
