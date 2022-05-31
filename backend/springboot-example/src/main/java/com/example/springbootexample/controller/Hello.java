@@ -140,6 +140,19 @@ public class Hello {
         return newFilename;
     }
 
+    @PostMapping("/api/save")
+    public void save(@RequestBody Map<String, String> params) {
+        String imgStr = params.get("imgStr");
+        String fileName = params.get("fileName");
+        Integer userId = Integer.parseInt(params.get("userId"));
+        String originPath = FileUtil.GetFrontEndPath(fileName);
+        Renew.GenerateImage(imgStr, originPath);
+        Photo originPhoto = new Photo();
+        originPhoto.setUserId(userId);
+        originPhoto.setPhotoName(fileName);
+        originPhoto.setPhotoPath(originPath);
+        photoDao.savePhoto(originPhoto);
+    }
     @PostMapping("/api/makeup")
     public String makeup(@RequestBody Map<String, String> params){
         String imgStr = params.get("imgStr");
